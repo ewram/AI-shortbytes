@@ -17,11 +17,18 @@ public class GeneticAlgorithm {
 	private int times = 0;
 	private boolean running = true;
 
-	Candidate[] bestParents = {new Candidate(), new Candidate(), new Candidate(), new Candidate(), new Candidate(), new Candidate(), new Candidate(), new Candidate()};
-
-
+	Candidate[] bestParents = {
+			new Candidate(), 
+			new Candidate(), 
+			new Candidate(), 
+			new Candidate(), 
+			new Candidate(), 
+			new Candidate(), 
+			new Candidate(), 
+			new Candidate()};
+	
 	public GeneticAlgorithm() {
-
+		
 	}
 
 	public static void main(String[] args) {
@@ -44,7 +51,6 @@ public class GeneticAlgorithm {
 			expression.append(operators[ran.nextInt(operators.length)]);
 			expression.append(cifers[ran.nextInt(cifers.length)]);
 
-
 			parents[i] = new Candidate(expression.toString());
 			evaluate(parents[i]);
 		}
@@ -58,7 +64,7 @@ public class GeneticAlgorithm {
 			for(int i = 0; i < parents.length-5; i++) {
 				System.out.println(i+" candidate. Fitness: "+ parents[i].getFitness() + " Expression: " + parents[i].getExpression());
 			}
-
+			
 			Candidate[] children = new Candidate[14];
 			Candidate[] breedResult = breed(parents[0], parents[1]);
 			children[0] = breedResult[0];
@@ -110,8 +116,6 @@ public class GeneticAlgorithm {
 	public void evaluate(Candidate candidate) {
 		String expression = candidate.getExpression();
 
-		//        System.out.println("Sequence: " + expression);
-
 		double result = 0;
 
 		try {
@@ -129,9 +133,6 @@ public class GeneticAlgorithm {
 
 
 		candidate.setFitness(-diff);
-		//        System.out.println("Result" + result);
-		//        System.out.println("Diff: " + diff);
-		//        System.out.println("Cand. Fitness: " + candidate.getFitness());
 	}
 
 	private Candidate[] breed(Candidate parent1, Candidate parent2) {
