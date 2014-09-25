@@ -1,4 +1,4 @@
-package com.src.main;
+package no.uib.mof077.shortbytes.genetics;
 
 public class Candidate {
 	private String expression;
