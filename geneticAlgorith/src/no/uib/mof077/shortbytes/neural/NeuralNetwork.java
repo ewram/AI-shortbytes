@@ -9,11 +9,15 @@ public class NeuralNetwork {
 	private ArrayList<Node> outNodes = new ArrayList<>();
 	
 	
-	public NeuralNetwork(boolean in1, boolean in2) {
+	public NeuralNetwork() {
 		
 	}
 
 	public void addNode(Node node, ArrayList<Node> list) {
 		list.add(node);
+	}
+	
+	public void removeNode(Node node, ArrayList<Node> list) {
+		list.remove(node);
 	}
 }
