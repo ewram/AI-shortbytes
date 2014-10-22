@@ -60,6 +60,10 @@ public class XORNetwork {
 		}
 	}
 
+	/**
+	 * Sends signals through all connections based on if the from Node sends above its threshold
+	 * the value is multiplied with the weight, and added to the to Node
+	 */
 	public void sendSignals() {
 		int count = 1;
 
@@ -72,6 +76,9 @@ public class XORNetwork {
 		}
 	}
 
+	/**
+	 * prints the result of the XOR output
+	 */
 	public void printResult() {
 		for(Node n : outputLayer.getNodeList()) {
 			if(n.getValue() >= n.getThreshold()) {
