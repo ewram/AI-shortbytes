@@ -1,23 +1,11 @@
 package no.uib.mof077.shortbytes.neural;
-
 public class Node {
-	private boolean send;
 	private int value;
-	private float weight;
+	private int threshold;
 	
-	public Node(boolean send, int value, float weight) {
-		this.setSend(send);;
+	public Node(int value, int threshold) {
 		this.setValue(value);
-		this.setWeight(weight);
-		
-	}
-
-	public boolean isSend() {
-		return send;
-	}
-
-	public void setSend(boolean send) {
-		this.send = send;
+		this.setThreshold(threshold);
 	}
 
 	public int getValue() {
@@ -28,11 +16,12 @@ public class Node {
 		this.value = value;
 	}
 
-	public float getWeight() {
-		return weight;
+	public int getThreshold() {
+		return threshold;
 	}
 
-	public void setWeight(float weight) {
-		this.weight = weight;
+	public void setThreshold(int threshold) {
+		this.threshold = threshold;
 	}
+	
 }
