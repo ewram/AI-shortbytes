@@ -37,9 +37,9 @@ public class XORNetwork {
 		outputList.add(output1);
 
 		// Create NodeLayers from input-, hidden- and outputLayer
-		this.inputLayer = new NodeLayer(inputList);
-		this.hiddenLayer = new NodeLayer(hiddenList);
-		this.outputLayer = new NodeLayer(outputList);
+		this.inputLayer = new NodeLayer(inputList, 0.2f);
+		this.hiddenLayer = new NodeLayer(hiddenList, 0.5f);
+		this.outputLayer = new NodeLayer(outputList, 0.2f);
 
 		Random rand = new Random();
 
@@ -96,33 +96,39 @@ public class XORNetwork {
 		return results;
 	}
 
-	public void runBackPropagation(Node output, float difference) {
+	public void runBackPropagation(Node output, float error) {
 		if(output.getFromConnections().size() < 1) {
 			return;
 		} else {
 			for(Connection c : output.getFromConnections()) {
-				//TODO: do connection changes
-				c.setWeight(c.getWeight() * difference);
+				// l * e * xi
+				float l = c.getFrom().getLearningRate();
+				float e = error;
+				float xi = c.getWeight();
+				System.out.println("l = " + l + ", e = " + e + ", xi = " + xi);
+				float dwi = l * e * xi;
+				System.out.println("dwi = " + dwi);
+				c.setWeight(dwi);
 
-				runBackPropagation(c.getFrom(), difference);
+				runBackPropagation(c.getFrom(), error);
 			}
 		}
 	}
 
-	public float calculateDifference(float output, float expected) {
+	public float calculateError(float output, float expected) {
 		float error = output * (1 - output) * (expected - output);
-		return error;
+		return Math.abs(error);
 	}
 
 	public static void main(String[] args) {
 		XORNetwork network = new XORNetwork();
 
-		//Sets up inputs
-
-		float totalError = network.calculateTotalError();
-		System.out.println(totalError);
-
-		network.runBackPropagation(network.outputLayer.getNodeList().get(0), totalError);
+		for (int i = 0; i < 1000; i++) {
+			float totalError = network.calculateTotalError();
+			System.out.println(totalError);
+			network.runBackPropagation(network.outputLayer.getNodeList().get(0), totalError);
+		}
+		
 
 		
 	}
@@ -156,31 +162,31 @@ public class XORNetwork {
 		this.inputLayer.nodeList.get(1).setValue(inputex12);
 		this.sendSignals();
 		float result = this.printResult()[0];
-		float difference = this.calculateDifference(result, expected1);
+		float error = this.calculateError(result, expected1);
 
-		totalError += difference;
+		totalError += error;
 
 		this.inputLayer.nodeList.get(0).setValue(inputex21);
 		this.inputLayer.nodeList.get(1).setValue(inputex22);
 		this.sendSignals();
 		result = this.printResult()[0];
-		difference = this.calculateDifference(result, expected2);
+		error = this.calculateError(result, expected2);
 
-		totalError += difference;
+		totalError += error;
 		this.inputLayer.nodeList.get(0).setValue(inputex31);
 		this.inputLayer.nodeList.get(1).setValue(inputex32);
 		this.sendSignals();
 		result = this.printResult()[0];
-		difference = this.calculateDifference(result, expected3);
+		error = this.calculateError(result, expected3);
 
-		totalError += difference;
+		totalError += error;
 		this.inputLayer.nodeList.get(0).setValue(inputex41);
 		this.inputLayer.nodeList.get(1).setValue(inputex42);
 		this.sendSignals();
 		result = this.printResult()[0];
-		difference = this.calculateDifference(result, expected4);
+		error = this.calculateError(result, expected4);
 
-		totalError += difference;
+		totalError += error;
 
 		return totalError;
 	}

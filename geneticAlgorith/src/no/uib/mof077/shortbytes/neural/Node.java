@@ -6,6 +6,7 @@ import java.util.List;
 public class Node {
 	private float value;
 	private float threshold;
+	private float learningRate;
 	private List<Connection> fromConnections;
 	private List<Connection> toConnections;
 	
@@ -30,6 +31,14 @@ public class Node {
 
 	public void setThreshold(float threshold) {
 		this.threshold = threshold;
+	}
+
+	public float getLearningRate() {
+		return learningRate;
+	}
+
+	public void setLearningRate(float learningRate) {
+		this.learningRate = learningRate;
 	}
 
 	public List<Connection> getFromConnections() {
