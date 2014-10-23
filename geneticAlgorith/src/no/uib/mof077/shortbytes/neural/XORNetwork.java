@@ -1,35 +1,37 @@
 package no.uib.mof077.shortbytes.neural;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class XORNetwork {
 
 	private NodeLayer inputLayer;
+	@SuppressWarnings("unused")
 	private NodeLayer hiddenLayer;
 	private NodeLayer outputLayer;
 
 	ArrayList<Connection> connections = new ArrayList<>();
 
 	public XORNetwork() {
-		
+
 		// Create two input nodes with a 0 value and 1 threshold
-		Node input1 = new Node(0, 1);
-		Node input2 = new Node(0, 1);
+		Node input1 = new Node(0, 0);
+		Node input2 = new Node(0, 0);
 		// Add input nodes to inputList
 		ArrayList<Node> inputList = new ArrayList<>();
 		inputList.add(input1);
 		inputList.add(input2);
 
 		// Create two hidden nodes with a 0 value and 1 threshold
-		Node hidden1 = new Node(0, 1);
-		Node hidden2 = new Node(0, 1);
+		Node hidden1 = new Node(0, 0);
+		Node hidden2 = new Node(0, 0);
 		// Add hidden nodes to hiddenList
 		ArrayList<Node> hiddenList = new ArrayList<>();
 		hiddenList.add(hidden1);
 		hiddenList.add(hidden2);
 
 		// Create one output node with a 0 value and 1 threshold
-		Node output1 = new Node(0, 1);
+		Node output1 = new Node(0, 0);
 		// Add output node to outputList
 		ArrayList<Node> outputList = new ArrayList<>();
 		outputList.add(output1);
@@ -39,14 +41,16 @@ public class XORNetwork {
 		this.hiddenLayer = new NodeLayer(hiddenList);
 		this.outputLayer = new NodeLayer(outputList);
 
+		Random rand = new Random();
+
 		// Create Connections between nodes
 		addConnections(
-				new Connection(input1, hidden1, 1),
-				new Connection(input1, hidden2, -1),
-				new Connection(input2, hidden1, -1),
-				new Connection(input2, hidden2, 1),
-				new Connection(hidden1, output1, 1),
-				new Connection(hidden2, output1, 1)
+				new Connection(input1, hidden1, (float)(rand.nextInt(20)-10)/10),
+				new Connection(input1, hidden2, (float)(rand.nextInt(20)-10)/10),
+				new Connection(input2, hidden1, (float)(rand.nextInt(20)-10)/10),
+				new Connection(input2, hidden2, (float)(rand.nextInt(20)-10)/10),
+				new Connection(hidden1, output1, (float)(rand.nextInt(20)-10)/10),
+				new Connection(hidden2, output1, (float)(rand.nextInt(20)-10)/10)
 				);
 	}
 
@@ -68,34 +72,116 @@ public class XORNetwork {
 		int count = 1;
 
 		for(Connection connection : this.connections) {
-			if(connection.getFrom().getValue() >= connection.getFrom().getThreshold()) {
-				System.out.println("sending through link " + count +":" + connection.getFrom().getValue()*connection.getWeight());
-				connection.getTo().setValue(connection.getTo().getValue() + (connection.getFrom().getValue() * connection.getWeight()));
-			}
-			count++;
+			System.out.println("sending through link " + count +":" + connection.getFrom().getValue()*connection.getWeight());
+			connection.getTo().setValue(connection.getTo().getValue() + (connection.getFrom().getValue() * connection.getWeight()));
+			count++;	
 		}
 	}
 
 	/**
 	 * prints the result of the XOR output
 	 */
-	public void printResult() {
+	public float[] printResult() {
+		float[] results = new float[outputLayer.getNodeList().size()];
+		int index = 0;
 		for(Node n : outputLayer.getNodeList()) {
+			results[index] = n.getValue();
 			if(n.getValue() >= n.getThreshold()) {
 				System.out.println("XOR: true");
 			} else {
 				System.out.println("XOR: false");
 			}
+			index ++;
 		}
+		return results;
+	}
+
+	public void runBackPropagation(Node output, float difference) {
+		if(output.getFromConnections().size() < 1) {
+			return;
+		} else {
+			for(Connection c : output.getFromConnections()) {
+				//TODO: do connection changes
+				c.setWeight(c.getWeight() * difference);
+
+				runBackPropagation(c.getFrom(), difference);
+			}
+		}
+	}
+
+	public float calculateDifference(float output, float expected) {
+		float error = output * (1 - output) * (expected - output);
+		return error;
 	}
 
 	public static void main(String[] args) {
 		XORNetwork network = new XORNetwork();
 
-		network.inputLayer.nodeList.get(0).setValue(1);
-		network.inputLayer.nodeList.get(1).setValue(0);
+		//Sets up inputs
 
-		network.sendSignals();
-		network.printResult();
+		float totalError = network.calculateTotalError();
+		System.out.println(totalError);
+
+		network.runBackPropagation(network.outputLayer.getNodeList().get(0), totalError);
+
+		
+	}
+
+	private float calculateTotalError() {
+		//TEST DATA
+		//true
+		float expected1 = 1.0f;
+		float inputex11 = 1.0f;
+		float inputex12 = 0;
+
+		//true
+		float expected2 = 1.0f;
+		float inputex21 = 0.0f;
+		float inputex22 = 1.0f;
+
+		//false
+		float expected3 = 0.0f;
+		float inputex31 = 0.0f;
+		float inputex32 = 0.0f;
+
+		//false
+		float expected4 = 0.0f;
+		float inputex41 = 1.0f;
+		float inputex42 = 1.0f;
+
+
+		float totalError = 0;
+
+		this.inputLayer.nodeList.get(0).setValue(inputex11);
+		this.inputLayer.nodeList.get(1).setValue(inputex12);
+		this.sendSignals();
+		float result = this.printResult()[0];
+		float difference = this.calculateDifference(result, expected1);
+
+		totalError += difference;
+
+		this.inputLayer.nodeList.get(0).setValue(inputex21);
+		this.inputLayer.nodeList.get(1).setValue(inputex22);
+		this.sendSignals();
+		result = this.printResult()[0];
+		difference = this.calculateDifference(result, expected2);
+
+		totalError += difference;
+		this.inputLayer.nodeList.get(0).setValue(inputex31);
+		this.inputLayer.nodeList.get(1).setValue(inputex32);
+		this.sendSignals();
+		result = this.printResult()[0];
+		difference = this.calculateDifference(result, expected3);
+
+		totalError += difference;
+		this.inputLayer.nodeList.get(0).setValue(inputex41);
+		this.inputLayer.nodeList.get(1).setValue(inputex42);
+		this.sendSignals();
+		result = this.printResult()[0];
+		difference = this.calculateDifference(result, expected4);
+
+		totalError += difference;
+
+		return totalError;
 	}
 }

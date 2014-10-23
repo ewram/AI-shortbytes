@@ -1,27 +1,51 @@
 package no.uib.mof077.shortbytes.neural;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Node {
-	private int value;
-	private int threshold;
+	private float value;
+	private float threshold;
+	private List<Connection> fromConnections;
+	private List<Connection> toConnections;
 	
 	public Node(int value, int threshold) {
 		this.setValue(value);
 		this.setThreshold(threshold);
+		this.fromConnections = new ArrayList<>();
+		this.toConnections = new ArrayList<>();
 	}
 
-	public int getValue() {
+	public float getValue() {
 		return value;
 	}
 
-	public void setValue(int value) {
+	public void setValue(float value) {
 		this.value = value;
 	}
 
-	public int getThreshold() {
+	public float getThreshold() {
 		return threshold;
 	}
 
-	public void setThreshold(int threshold) {
+	public void setThreshold(float threshold) {
 		this.threshold = threshold;
+	}
+
+	public List<Connection> getFromConnections() {
+		return fromConnections;
+	}
+
+	public void setFromConnections(List<Connection> fromConnections) {
+		this.fromConnections = fromConnections;
+	}
+
+	public List<Connection> getToConnections() {
+		return toConnections;
+	}
+
+	public void setToConnections(List<Connection> toConnections) {
+		this.toConnections = toConnections;
 	}
 	
 }
