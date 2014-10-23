@@ -53,37 +53,6 @@ public class Tree {
 		return entropy;
 	}
 	
-//	public double calculateGenderEntropy() {
-//		
-//		
-//		
-//		double maleCounter = 0;
-//		double femaleCounter = 0;
-//		for (Person person : people) {
-//			if (person.getGender() == Person.Gender.MALE) {
-//				maleCounter++;
-//			} else {
-//				femaleCounter++;
-//			}
-//		}
-//		
-//		int divider = people.size();
-//		
-//		// Print variables
-//		System.out.println("Divider: " + divider);
-//		System.out.println("Male count: " + maleCounter);
-//		System.out.println("Female count: " + femaleCounter);
-//		
-//		// Entropy
-//		double maleEntropy = -(maleCounter / divider) * (Math.log(maleCounter/divider) / Math.log(2));
-//		double femaleEntropy = -(femaleCounter / divider) * (Math.log(femaleCounter/divider) / Math.log(2));
-//		double entropy = maleEntropy + femaleEntropy;
-//		
-//		// Print entropy
-//		System.out.println("Entropy: " + entropy);
-//		return entropy;
-//	}
-	
 	public static void main(String[] args) {
 		Tree t = new Tree();
 		
@@ -93,63 +62,89 @@ public class Tree {
 		Map<String, Integer> travelCostCategories = new HashMap<>();
 		Map<String, Integer> transportModeCategories = new HashMap<>();
 		
-		genderCategories.put("Male", 0);
-		genderCategories.put("Female", 0);
+		String male, female, zero, one, two, low, med, high, cheap, standard, expensive, bus, car, train;
+		male = Person.Gender.MALE.name();
+		female = Person.Gender.FEMALE.name();
+		zero = "0";
+		one = "1";
+		two = "2";
+		low = Person.IncomeLevel.LOW.name();
+		med = Person.IncomeLevel.MEDIUM.name();
+		high = Person.IncomeLevel.HIGH.name();
+		cheap = Person.TravelCost.CHEAP.name();
+		standard = Person.TravelCost.STANDARD.name();
+		expensive = Person.TravelCost.EXPENSIVE.name();
+		bus = Person.TransportMode.BUS.name();
+		car = Person.TransportMode.CAR.name();
+		train = Person.TransportMode.TRAIN.name();
 		
-		carsCategories.put("0", 0);
-		carsCategories.put("1", 0);
-		carsCategories.put("2", 0);
 		
-		incomeCategories.put("Low", 0);
-		incomeCategories.put("Med", 0);
-		incomeCategories.put("High", 0);
+		genderCategories.put(male, 0);
+		genderCategories.put(female, 0);
 		
-		travelCostCategories.put("Cheap", 0);
-		travelCostCategories.put("Standard", 0);
-		travelCostCategories.put("Expensive", 0);
+		carsCategories.put(zero, 0);
+		carsCategories.put(one, 0);
+		carsCategories.put(two, 0);
 		
-		transportModeCategories.put("Bus", 0);
-		transportModeCategories.put("Car", 0);
-		transportModeCategories.put("Train", 0);
+		incomeCategories.put(low, 0);
+		incomeCategories.put(med, 0);
+		incomeCategories.put(high, 0);
+		
+		travelCostCategories.put(cheap, 0);
+		travelCostCategories.put(standard, 0);
+		travelCostCategories.put(expensive, 0);
+		
+		transportModeCategories.put(bus, 0);
+		transportModeCategories.put(car, 0);
+		transportModeCategories.put(train, 0);
 		
 		for (Person person : t.getPeople()) {
+			
+			String gender, cars, income, travelCost, transportMode;
+			
 			if (person.getGender() == Person.Gender.MALE) {
-				genderCategories.put("Male", genderCategories.get("Male") + 1);
+				gender = male;
 			} else {
-				genderCategories.put("Female", genderCategories.get("Female") + 1);
+				gender = female;
 			}
 			
 			if (person.getIncomeLevel() == Person.IncomeLevel.LOW) {
-				incomeCategories.put("Low", incomeCategories.get("Low") + 1);
+				income = low;
 			} else if (person.getIncomeLevel() == Person.IncomeLevel.MEDIUM) {
-				incomeCategories.put("Med", incomeCategories.get("Med") + 1);
+				income = med;
 			} else {
-				incomeCategories.put("High", incomeCategories.get("High") + 1);
+				income = high;
 			}
 			
 			if (person.getNumCars() == 0) {
-				carsCategories.put("0", carsCategories.get("0") + 1);
+				cars = zero;
 			} else if (person.getNumCars() == 1) {
-				carsCategories.put("1", carsCategories.get("1") + 1);
+				cars = one;
 			} else {
-				carsCategories.put("2", carsCategories.get("2") + 1);
+				cars = two;
 			}
 			
 			if (person.getTransportMode() == Person.TransportMode.BUS) {
-				transportModeCategories.put("Bus", transportModeCategories.get("Bus") + 1);
+				transportMode = bus;
 			} else if (person.getTransportMode() == Person.TransportMode.CAR) {
-				transportModeCategories.put("Car", transportModeCategories.get("Car") + 1);
+				transportMode = car;
 			} else {
-				transportModeCategories.put("Train", transportModeCategories.get("Train") + 1);
+				transportMode = train;
 			}
 			
 			if (person.getTravelCost() == Person.TravelCost.CHEAP) {
-				travelCostCategories.put("Cheap", travelCostCategories.get("Cheap") + 1);
+				travelCost = cheap;
 			} else if (person.getTravelCost() == Person.TravelCost.STANDARD) {
-				travelCostCategories.put("Standard", travelCostCategories.get("Standard") + 1);
+				travelCost = standard;
 			} else {
-				travelCostCategories.put("Expensive", travelCostCategories.get("Expensive") + 1);
+				travelCost = expensive;
 			}
+			
+			genderCategories.put(gender, genderCategories.get(gender) + 1);
+			incomeCategories.put(income, incomeCategories.get(income) + 1);
+			carsCategories.put(cars, carsCategories.get(cars) + 1);
+			transportModeCategories.put(transportMode, transportModeCategories.get(transportMode) + 1);
+			travelCostCategories.put(travelCost, travelCostCategories.get(travelCost) + 1);
 		}
 		
 		double genderEntropy = t.calculateEntropy(t.getPeople().size(), genderCategories);

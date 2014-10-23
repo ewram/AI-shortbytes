@@ -69,7 +69,7 @@ public class XORNetwork {
 	 * the value is multiplied with the weight, and added to the to Node
 	 */
 	public void sendSignals() {
-		int count = 1;
+		double count = 1;
 
 		for(Connection connection : this.connections) {
 			System.out.println("sending through link " + count +":" + connection.getFrom().getValue()*connection.getWeight());
@@ -81,8 +81,8 @@ public class XORNetwork {
 	/**
 	 * prints the result of the XOR output
 	 */
-	public float[] printResult() {
-		float[] results = new float[outputLayer.getNodeList().size()];
+	public double[] printResult() {
+		double[] results = new double[outputLayer.getNodeList().size()];
 		int index = 0;
 		for(Node n : outputLayer.getNodeList()) {
 			results[index] = n.getValue();
@@ -96,17 +96,17 @@ public class XORNetwork {
 		return results;
 	}
 
-	public void runBackPropagation(Node output, float error) {
+	public void runBackPropagation(Node output, double error) {
 		if(output.getFromConnections().size() < 1) {
 			return;
 		} else {
 			for(Connection c : output.getFromConnections()) {
 				// l * e * xi
-				float l = c.getFrom().getLearningRate();
-				float e = error;
-				float xi = c.getWeight();
+				double l = c.getFrom().getLearningRate();
+				double e = error;
+				double xi = c.getWeight();
 				System.out.println("l = " + l + ", e = " + e + ", xi = " + xi);
-				float dwi = l * e * xi;
+				double dwi = l * e * xi;
 				System.out.println("dwi = " + dwi);
 				c.setWeight(dwi);
 
@@ -115,16 +115,16 @@ public class XORNetwork {
 		}
 	}
 
-	public float calculateError(float output, float expected) {
-		float error = output * (1 - output) * (expected - output);
+	public double calculateError(double output, double expected) {
+		double error = output * (1 - output) * (expected - output);
 		return Math.abs(error);
 	}
 
 	public static void main(String[] args) {
 		XORNetwork network = new XORNetwork();
 
-		for (int i = 0; i < 1000; i++) {
-			float totalError = network.calculateTotalError();
+		for (int i = 0; i < 100; i++) {
+			double totalError = network.calculateTotalError();
 			System.out.println(totalError);
 			network.runBackPropagation(network.outputLayer.getNodeList().get(0), totalError);
 		}
@@ -133,36 +133,36 @@ public class XORNetwork {
 		
 	}
 
-	private float calculateTotalError() {
+	private double calculateTotalError() {
 		//TEST DATA
 		//true
-		float expected1 = 1.0f;
-		float inputex11 = 1.0f;
-		float inputex12 = 0;
+		double expected1 = 1.0d;
+		double inputex11 = 1.0d;
+		double inputex12 = 0;
 
 		//true
-		float expected2 = 1.0f;
-		float inputex21 = 0.0f;
-		float inputex22 = 1.0f;
+		double expected2 = 1.0d;
+		double inputex21 = 0.0d;
+		double inputex22 = 1.0d;
 
 		//false
-		float expected3 = 0.0f;
-		float inputex31 = 0.0f;
-		float inputex32 = 0.0f;
+		double expected3 = 0.0d;
+		double inputex31 = 0.0d;
+		double inputex32 = 0.0d;
 
 		//false
-		float expected4 = 0.0f;
-		float inputex41 = 1.0f;
-		float inputex42 = 1.0f;
+		double expected4 = 0.0d;
+		double inputex41 = 1.0d;
+		double inputex42 = 1.0d;
 
 
-		float totalError = 0;
+		double totalError = 0;
 
 		this.inputLayer.nodeList.get(0).setValue(inputex11);
 		this.inputLayer.nodeList.get(1).setValue(inputex12);
 		this.sendSignals();
-		float result = this.printResult()[0];
-		float error = this.calculateError(result, expected1);
+		double result = this.printResult()[0];
+		double error = this.calculateError(result, expected1);
 
 		totalError += error;
 

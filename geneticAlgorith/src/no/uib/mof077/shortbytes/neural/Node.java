@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Node {
-	private float value;
-	private float threshold;
-	private float learningRate;
+	private double value;
+	private double threshold;
+	private double learningRate;
 	private List<Connection> fromConnections;
 	private List<Connection> toConnections;
 	
@@ -17,27 +17,27 @@ public class Node {
 		this.toConnections = new ArrayList<>();
 	}
 
-	public float getValue() {
+	public double getValue() {
 		return value;
 	}
 
-	public void setValue(float value) {
+	public void setValue(double value) {
 		this.value = value;
 	}
 
-	public float getThreshold() {
+	public double getThreshold() {
 		return threshold;
 	}
 
-	public void setThreshold(float threshold) {
+	public void setThreshold(double threshold) {
 		this.threshold = threshold;
 	}
 
-	public float getLearningRate() {
+	public double getLearningRate() {
 		return learningRate;
 	}
 
-	public void setLearningRate(float learningRate) {
+	public void setLearningRate(double learningRate) {
 		this.learningRate = learningRate;
 	}
 

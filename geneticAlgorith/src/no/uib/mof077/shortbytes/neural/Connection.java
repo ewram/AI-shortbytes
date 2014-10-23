@@ -1,11 +1,11 @@
 package no.uib.mof077.shortbytes.neural;
 
 public class Connection {
-	private float weight;
+	private double weight;
 	private Node from;
 	private Node to;
 	
-	public Connection(Node from, Node to, float weight) {
+	public Connection(Node from, Node to, double weight) {
 		this.from = from;
 		this.to = to;
 		this.weight = weight;
@@ -13,11 +13,11 @@ public class Connection {
 		to.getFromConnections().add(this);
 	}
 
-	public float getWeight() {
+	public double getWeight() {
 		return weight;
 	}
 
-	public void setWeight(float weight) {
+	public void setWeight(double weight) {
 		this.weight = weight;
 	}
 
