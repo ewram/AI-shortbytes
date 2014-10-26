@@ -134,6 +134,9 @@ public class Tree {
 		double keyCat1Range = Person.countCategoryValues(keyCat1);
 		double keyCat2Range = Person.countCategoryValues(keyCat2);
 		
+		System.out.println(keyCat1Range);
+		System.out.println(keyCat2Range);
+		
 		for (Person person : people) {
 			for (String key : person.getProperties().keySet()) {
 				if (key.toLowerCase().equals(keyCat1.toLowerCase())) {
@@ -174,7 +177,8 @@ public class Tree {
 		
 		Node maxNode = selectNodeWithHighestEntropy(genderEntropy, carsEntropy, travelCostEntropy, transportEntropy, incomeEntropy);
 		
-		
+		//test to see if this works...
+		t.caclulateInformationGain(30, "gender", "travelCost");
 		
 		System.out.println("Max: " + maxNode.getCategory() + " with entropy " + maxNode.getEntropy());
 	}

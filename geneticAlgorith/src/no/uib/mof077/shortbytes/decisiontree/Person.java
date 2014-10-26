@@ -1,5 +1,6 @@
 package no.uib.mof077.shortbytes.decisiontree;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Person {
@@ -31,6 +32,7 @@ public class Person {
 	public Person(Gender gender, int numCars, TravelCost travelCost,
 			IncomeLevel incomeLevel, TransportMode transportMode) {
 		super();
+		properties = new HashMap<String, String>();
 		this.gender = gender;
 		this.numCars = numCars;
 		this.travelCost = travelCost;
