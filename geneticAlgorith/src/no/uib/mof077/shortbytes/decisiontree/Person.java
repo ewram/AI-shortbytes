@@ -1,5 +1,7 @@
 package no.uib.mof077.shortbytes.decisiontree;
 
+import java.util.Map;
+
 public class Person {
 	public static enum Gender {
 		MALE, FEMALE
@@ -24,6 +26,8 @@ public class Person {
 	private IncomeLevel incomeLevel;
 	private TransportMode transportMode;
 	
+	private Map<String, String> properties;
+	
 	public Person(Gender gender, int numCars, TravelCost travelCost,
 			IncomeLevel incomeLevel, TransportMode transportMode) {
 		super();
@@ -32,6 +36,11 @@ public class Person {
 		this.travelCost = travelCost;
 		this.incomeLevel = incomeLevel;
 		this.transportMode = transportMode;
+		properties.put("Gender", gender.name());
+		properties.put("NumCars", "" + numCars);
+		properties.put("TravelCost", travelCost.name());
+		properties.put("IncomeLevel", incomeLevel.name());
+		properties.put("TransportMode", transportMode.name());
 	}
 
 	public Gender getGender() {
@@ -72,5 +81,31 @@ public class Person {
 
 	public void setTransportMode(TransportMode transportMode) {
 		this.transportMode = transportMode;
+	}
+
+	public Map<String, String> getProperties() {
+		return properties;
+	}
+
+	public void setProperties(Map<String, String> properties) {
+		this.properties = properties;
+	}
+	
+	public static int countCategoryValues(String keyCat) {
+		switch (keyCat.toLowerCase()) {
+		case "gender":
+			return Gender.values().length;
+		case "travelcost":
+			return TravelCost.values().length;
+		case "incomelevel":
+			return IncomeLevel.values().length;
+		case "transportmode":
+			return TransportMode.values().length;
+		case "numcars":
+			return 3;
+		default:
+			System.out.println("Unrecognized!");
+			return 0;
+		}
 	}
 }

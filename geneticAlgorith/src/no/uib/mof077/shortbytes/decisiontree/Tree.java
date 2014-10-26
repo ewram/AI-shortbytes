@@ -7,6 +7,13 @@ import java.util.Map;
 
 public class Tree {
 	private List<Person> people;
+	private Node rootNode;
+	
+	public Map<String, Integer> genderCategories = new HashMap<>();
+	public Map<String, Integer> carsCategories = new HashMap<>();
+	public Map<String, Integer> incomeCategories = new HashMap<>();
+	public Map<String, Integer> travelCostCategories = new HashMap<>();
+	public Map<String, Integer> transportModeCategories = new HashMap<>();
 	
 	public Tree() {
 		people = new ArrayList<>();
@@ -21,6 +28,7 @@ public class Tree {
 				new Person(Person.Gender.FEMALE, 1, Person.TravelCost.CHEAP, Person.IncomeLevel.MEDIUM, Person.TransportMode.TRAIN),
 				new Person(Person.Gender.MALE, 0, Person.TravelCost.STANDARD, Person.IncomeLevel.MEDIUM, Person.TransportMode.TRAIN),
 				new Person(Person.Gender.FEMALE, 1, Person.TravelCost.STANDARD, Person.IncomeLevel.MEDIUM, Person.TransportMode.TRAIN));
+		this.rootNode = new Node(null, null, null, 0, 0);
 	}
 	
 	public void addPeople(Person... persons) {
@@ -29,39 +37,7 @@ public class Tree {
 		}
 	}
 	
-//	public Tree id3(examples, attributes) {
-////		if all examples in same category then
-////			return a leaf node with that category
-////		if attributes is empty then
-////			return a leaf node with the most common category in
-////		examples
-////		best = Choose-Attribute(examples,attributes)
-////		tree = new tree with Best as root attribute test
-////		foreach value vi of best example
-////			example si = subset of examples with best == vi
-////			subtree = ID3(example si, attributes – best)
-////			add a branch to tree with best == vi and subtree beneath
-////		return tree
-//	}
-	
-	public double calculateEntropy(int divider, Map<String, Integer> categories) {
-		double entropy = 0;
-		for (String category : categories.keySet()) {
-			double categoryValues = categories.get(category);
-			entropy += -(categoryValues / divider) * (Math.log(categoryValues/divider) / Math.log(2));
-		}
-		return entropy;
-	}
-	
-	public static void main(String[] args) {
-		Tree t = new Tree();
-		
-		Map<String, Integer> genderCategories = new HashMap<>();
-		Map<String, Integer> carsCategories = new HashMap<>();
-		Map<String, Integer> incomeCategories = new HashMap<>();
-		Map<String, Integer> travelCostCategories = new HashMap<>();
-		Map<String, Integer> transportModeCategories = new HashMap<>();
-		
+	public void init() {
 		String male, female, zero, one, two, low, med, high, cheap, standard, expensive, bus, car, train;
 		male = Person.Gender.MALE.name();
 		female = Person.Gender.FEMALE.name();
@@ -98,7 +74,7 @@ public class Tree {
 		transportModeCategories.put(car, 0);
 		transportModeCategories.put(train, 0);
 		
-		for (Person person : t.getPeople()) {
+		for (Person person : people) {
 			
 			String gender, cars, income, travelCost, transportMode;
 			
@@ -146,20 +122,73 @@ public class Tree {
 			transportModeCategories.put(transportMode, transportModeCategories.get(transportMode) + 1);
 			travelCostCategories.put(travelCost, travelCostCategories.get(travelCost) + 1);
 		}
+	}
+	
+	public static Node createNode(int divider, String category, Map<String, Integer> categories) {
+		double entropy = Tree.calulateEntropy(divider, categories);
+		return new Node(null, null, category, entropy, categories.size());
+	}
+	
+	public double caclulateInformationGain(double entropy, String keyCat1, String keyCat2) {
+		double infoGain = 0.0;
+		double keyCat1Range = Person.countCategoryValues(keyCat1);
+		double keyCat2Range = Person.countCategoryValues(keyCat2);
 		
-		double genderEntropy = t.calculateEntropy(t.getPeople().size(), genderCategories);
-		double carsEntropy = t.calculateEntropy(t.getPeople().size(), carsCategories);
-		double travelCostEntropy = t.calculateEntropy(t.getPeople().size(), travelCostCategories);
-		double transportEntropy = t.calculateEntropy(t.getPeople().size(), transportModeCategories);
-		double incomeEntropy = t.calculateEntropy(t.getPeople().size(), incomeCategories);
+		for (Person person : people) {
+			for (String key : person.getProperties().keySet()) {
+				if (key.toLowerCase().equals(keyCat1.toLowerCase())) {
+					
+				}
+			}
+		}
+		return infoGain;
+	}
+	
+	
+	
+	public static double calulateEntropy(int divider, Map<String, Integer> categories) {
+		double entropy = 0;
+		for (String catValue : categories.keySet()) {
+			double categoryValues = categories.get(catValue);
+			entropy += -(categoryValues / divider) * (Math.log(categoryValues/divider) / Math.log(2));
+		}
+		return entropy;
+	}
+	
+	public static void main(String[] args) {
+		Tree t = new Tree();
 		
-		System.out.println("Gender entropy: " + genderEntropy);
-		System.out.println("Cars entropy: " + carsEntropy);
-		System.out.println("Travel entropy: " + travelCostEntropy);
-		System.out.println("Income entropy: " + incomeEntropy);
-		System.out.println("Transport entropy: " + transportEntropy);
+		t.init();
+		
+		Node genderEntropy = Tree.createNode(t.getPeople().size(), "gender", t.genderCategories);
+		Node carsEntropy = Tree.createNode(t.getPeople().size(), "cars", t.carsCategories);
+		Node travelCostEntropy = Tree.createNode(t.getPeople().size(), "travelCost", t.travelCostCategories);
+		Node transportEntropy = Tree.createNode(t.getPeople().size(), "transportMode", t.transportModeCategories);
+		Node incomeEntropy = Tree.createNode(t.getPeople().size(), "income", t.incomeCategories);
+		
+		System.out.println("Gender entropy: " + genderEntropy.getEntropy());
+		System.out.println("Cars entropy: " + carsEntropy.getEntropy());
+		System.out.println("Travel entropy: " + travelCostEntropy.getEntropy());
+		System.out.println("Income entropy: " + incomeEntropy.getEntropy());
+		System.out.println("Transport entropy: " + transportEntropy.getEntropy());
+		
+		Node maxNode = selectNodeWithHighestEntropy(genderEntropy, carsEntropy, travelCostEntropy, transportEntropy, incomeEntropy);
 		
 		
+		
+		System.out.println("Max: " + maxNode.getCategory() + " with entropy " + maxNode.getEntropy());
+	}
+	
+	public static Node selectNodeWithHighestEntropy(Node... nodes) {
+		Node max = null;
+		for (Node node : nodes) {
+			if (max == null) {
+				max = node;
+			} else if (node.getEntropy() > max.getEntropy()){
+				max = node;
+			}
+		}
+		return max;
 	}
 
 	public List<Person> getPeople() {
@@ -168,5 +197,13 @@ public class Tree {
 
 	public void setPeople(List<Person> people) {
 		this.people = people;
+	}
+
+	public Node getRootNode() {
+		return rootNode;
+	}
+
+	public void setRootNode(Node rootNode) {
+		this.rootNode = rootNode;
 	}
 }
