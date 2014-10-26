@@ -38,11 +38,12 @@ public class Person {
 		this.travelCost = travelCost;
 		this.incomeLevel = incomeLevel;
 		this.transportMode = transportMode;
-		properties.put("Gender", gender.name());
-		properties.put("NumCars", "" + numCars);
-		properties.put("TravelCost", travelCost.name());
-		properties.put("IncomeLevel", incomeLevel.name());
-		properties.put("TransportMode", transportMode.name());
+		this.properties = new HashMap<>();
+		this.properties.put("Gender".toLowerCase(), gender.name().toLowerCase());
+		this.properties.put("Cars".toLowerCase(), "" + numCars);
+		this.properties.put("TravelCost".toLowerCase(), travelCost.name().toLowerCase());
+		this.properties.put("Income".toLowerCase(), incomeLevel.name().toLowerCase());
+		this.properties.put("TransportMode".toLowerCase(), transportMode.name().toLowerCase());
 	}
 
 	public Gender getGender() {
@@ -109,5 +110,47 @@ public class Person {
 			System.out.println("Unrecognized!");
 			return 0;
 		}
+	}
+	
+	public static String[] getCategoryValues(String keyCat) {
+		String[] categoryValues;
+		switch (keyCat.toLowerCase()) {
+		case "gender":
+			categoryValues = new String[Gender.values().length];
+			for (int i = 0; i < Gender.values().length; i++) {
+				categoryValues[i] = Gender.values()[i].name();
+			}
+			break;
+		case "travelcost":
+			categoryValues = new String[TravelCost.values().length];
+			for (int i = 0; i < TravelCost.values().length; i++) {
+				categoryValues[i] = TravelCost.values()[i].name();
+			}
+			break;
+		case "income":
+			categoryValues = new String[IncomeLevel.values().length];
+			for (int i = 0; i < IncomeLevel.values().length; i++) {
+				categoryValues[i] = IncomeLevel.values()[i].name();
+			}
+			break;
+		case "transportmode":
+			categoryValues = new String[TransportMode.values().length];
+			for (int i = 0; i < TransportMode.values().length; i++) {
+				categoryValues[i] = TransportMode.values()[i].name();
+			}
+			break;
+		case "cars":
+			categoryValues = new String[3];
+			for (int i = 0; i < 3; i++) {
+				categoryValues[i] = "" + (i);
+			}
+			break;
+		default:
+			System.out.println("Unrecognized!");
+			categoryValues = null;
+			break;
+		}
+		
+		return categoryValues;
 	}
 }
