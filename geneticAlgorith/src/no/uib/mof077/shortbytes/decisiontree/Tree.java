@@ -148,7 +148,7 @@ public class Tree {
 			System.out.println("<" + node.getCategory() + "> information gain: " + node.getInfoGain());
 		}
 		
-		Node rootNode = Tree.selectNodeWithHighestEntropy(nodeCandidates);
+		Node rootNode = Tree.selectNodeWithHighestInfoGain(nodeCandidates);
 		nodeCandidates.remove(rootNode);
 		tree.setRootNode(rootNode);
 		// This is where the magic ends
@@ -170,6 +170,18 @@ public class Tree {
 			if (max == null) {
 				max = node;
 			} else if (node.getEntropy() > max.getEntropy()){
+				max = node;
+			}
+		}
+		return max;
+	}
+	
+	public static Node selectNodeWithHighestInfoGain(List<Node> nodes) {
+		Node max = null;
+		for (Node node : nodes) {
+			if (max == null) {
+				max = node;
+			} else if (node.getInfoGain() > max.getInfoGain()){
 				max = node;
 			}
 		}
