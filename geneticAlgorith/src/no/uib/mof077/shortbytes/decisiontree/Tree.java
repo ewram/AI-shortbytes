@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Tree {
 	private List<Person> people;
-	private Node rootNode;
+	private Node classCategory;
 	
 	public Map<String, Map<String, Integer>> categories = new HashMap<>();
 
@@ -52,7 +52,11 @@ public class Tree {
 
 	public static Node createNode(int divider, String category, Map<String, Integer> categories) {
 		double entropy = Tree.calulateEntropy(divider, categories);
-		return new Node(null, null, category, entropy, 0, categories.size());
+		Map<String, Node> children = new HashMap<>();
+		for (String categoryValue : Person.getCategoryValues(category)) {
+			children.put(categoryValue, null);
+		}
+		return new Node(null, children, category, entropy, 0, categories.size());
 	}
 
 	public double caclulateInformationGainCategoryValue(double entropy, String keyCat1, String keyCat2) {
@@ -139,21 +143,45 @@ public class Tree {
 		nodeCandidates.remove(totalEntropy);
 		
 		// This is where the magic starts
-		for (Node node : nodeCandidates) {
+//		for (Node node : nodeCandidates) {
+//			double nodeInfoGain = tree.caclulateInformationGainCategoryValue(
+//					totalEntropy.getEntropy(),
+//					totalEntropy.getCategory(),
+//					node.getCategory());
+//			node.setInfoGain(nodeInfoGain);
+//			System.out.println("<" + node.getCategory() + "> information gain: " + node.getInfoGain());
+//		}
+//		
+//		Node rootNode = Tree.selectNodeWithHighestInfoGain(nodeCandidates);
+//		nodeCandidates.remove(rootNode);
+//		tree.setRootNode(rootNode);
+		Tree.createTree(tree, totalEntropy.getEntropy(), totalEntropy, nodeCandidates);
+		// This is where the magic ends
+		
+		System.out.println("Root node: <" + tree.getRootNode().getCategory() + ">, info gain: " + tree.getRootNode().getInfoGain());
+	}
+	
+	// TODO Something recursive to create a friggin' tree, yo
+	public static void createTree(Tree tree, double totalEntropy, Node classCategory, List<Node> nodes) {
+		for (Node node : nodes) {
 			double nodeInfoGain = tree.caclulateInformationGainCategoryValue(
-					totalEntropy.getEntropy(),
-					totalEntropy.getCategory(),
+					totalEntropy,
+					classCategory.getCategory(),
 					node.getCategory());
 			node.setInfoGain(nodeInfoGain);
 			System.out.println("<" + node.getCategory() + "> information gain: " + node.getInfoGain());
 		}
 		
-		Node rootNode = Tree.selectNodeWithHighestInfoGain(nodeCandidates);
-		nodeCandidates.remove(rootNode);
-		tree.setRootNode(rootNode);
-		// This is where the magic ends
-		
-		System.out.println("Root node: <" + tree.getRootNode().getCategory() + ">, info gain: " + tree.getRootNode().getInfoGain());
+		Node rootNode = Tree.selectNodeWithHighestInfoGain(nodes);
+		nodes.remove(rootNode);
+		if (tree.getRootNode() == null) {
+			tree.setRootNode(rootNode);
+		}
+		if (nodes.isEmpty()) {
+			return;
+		} else {
+			createTree(tree, totalEntropy, rootNode, nodes);
+		}
 	}
 
 	public static Node selectNodeWithHighestEntropy(Node... nodesArgs) {
@@ -197,10 +225,10 @@ public class Tree {
 	}
 
 	public Node getRootNode() {
-		return rootNode;
+		return classCategory;
 	}
 
 	public void setRootNode(Node rootNode) {
-		this.rootNode = rootNode;
+		this.classCategory = rootNode;
 	}
 }
