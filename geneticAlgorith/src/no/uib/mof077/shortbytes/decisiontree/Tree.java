@@ -126,7 +126,6 @@ public class Tree {
 
 		tree.init();
 
-		/*########## NEW SHIT ##########*/
 		List<Node> nodeCandidates = new ArrayList<>();
 		for (String category : tree.categories.keySet()) {
 			Node nodeCandidate = Tree.createNode(tree.getPeople().size(), category, tree.categories.get(category));
@@ -139,6 +138,7 @@ public class Tree {
 		
 		nodeCandidates.remove(totalEntropy);
 		
+		// This is where the magic starts
 		for (Node node : nodeCandidates) {
 			double nodeInfoGain = tree.caclulateInformationGainCategoryValue(
 					totalEntropy.getEntropy(),
@@ -149,7 +149,9 @@ public class Tree {
 		}
 		
 		Node rootNode = Tree.selectNodeWithHighestEntropy(nodeCandidates);
+		nodeCandidates.remove(rootNode);
 		tree.setRootNode(rootNode);
+		// This is where the magic ends
 		
 		System.out.println("Root node: <" + tree.getRootNode().getCategory() + ">, info gain: " + tree.getRootNode().getInfoGain());
 	}
