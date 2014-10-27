@@ -130,35 +130,74 @@ public class Tree {
 	}
 
 	public double caclulateInformationGainCategoryValue(double entropy, String keyCat1, String keyCat2) {
-		double infoGain = entropy;
-//		double keyCat1Range = Person.countCategoryValues(keyCat1);
-//		double keyCat2Range = Person.countCategoryValues(keyCat2);
-//		double overlap = 0;
+		double infoGain = 0;
 
 		// Get all possible values for the category, e.g. TransportMode => {"Bus", "Car", "Train"}
-		String[] categoryValues = Person.getCategoryValues(keyCat2.toLowerCase());
+		String[] cat1Values = Person.getCategoryValues(keyCat1.toLowerCase());
+		String[] cat2Values = Person.getCategoryValues(keyCat2.toLowerCase());
 		
-		// Initialize map to keep track of how many people have each value, e.g. "Bus" => 4, "Car" => 3, "Train" => 3
-		Map<String, Integer> catValueCount = new HashMap<>();
-		for (int i = 0; i < categoryValues.length; i++) {
-			catValueCount.put(categoryValues[i].toLowerCase(), 0);
+		System.out.println("cat1Values.length=" + cat1Values.length);
+		System.out.println("cat2Values.length=" + cat2Values.length);
+		
+		// Initialize map to keep track of how many people have each value, e.g. "Bus" => 4, "Car" => 3, "Train" => 3S
+		Map<String, Integer> catValueCount = new HashMap<>(); // OLD
+		Map<String, List<Integer>> cat2ValueCombo = new HashMap<>(); // NEW
+		for (int i = 0; i < cat2Values.length; i++) {
+			catValueCount.put(cat2Values[i].toLowerCase(), 0); // OLD
+			cat2ValueCombo.put(cat2Values[i].toLowerCase(), new ArrayList<Integer>()); // NEW
+			
+			List<Integer> intsYo = new ArrayList<>();
+			for (int j = 0; j < cat1Values.length; j++) {
+				intsYo.add(0);
+			}
+			cat2ValueCombo.put(cat2Values[i].toLowerCase(), intsYo);
 		}
 
 		// For each person, count +1 for each category value
 		for (Person person : people) {
-			String categoryValue = person.getProperties().get(keyCat2.toLowerCase()).toLowerCase();
-			catValueCount.put(categoryValue, catValueCount.get(categoryValue)+1);
+			String category1Value = person.getProperties().get(keyCat1.toLowerCase()).toLowerCase();
+			String category2Value = person.getProperties().get(keyCat2.toLowerCase()).toLowerCase();
+			catValueCount.put(category2Value, catValueCount.get(category2Value)+1); // OLD
+			
+			for (int i = 0; i < cat1Values.length; i++) {
+				if (cat1Values[i].toLowerCase().equals(category1Value)) {
+					List<Integer> values = cat2ValueCombo.get(category2Value);
+					int count = values.remove(i);
+					values.add(i, count+1);
+					cat2ValueCombo.put(category2Value, values);
+				}
+			}
 		}
 		
-		for (String categoryValue : catValueCount.keySet()) {
-			double valueCount = catValueCount.get(categoryValue);
-			infoGain += -(valueCount/people.size()) * Tree.calulateEntropy(people.size(), catValueCount);
-		}
+		infoGain = calculateCatValueEntropy(entropy, people.size(), cat2ValueCombo);
+		System.out.println("INFOGAIN: " + infoGain);
+		
+//		for (String categoryValue : catValueCount.keySet()) {
+//			double valueCount = catValueCount.get(categoryValue);
+//			infoGain += -(valueCount/people.size()) * Tree.calulateEntropy(cat1Values.length, catValueCount);
+//		}
 
 		return infoGain;
 	}
-
-
+	
+	public static double calculateCatValueEntropy(double totEntropy, int divider, Map<String, List<Integer>> catValueCombo) {
+		double entropy = totEntropy;
+		for (String key : catValueCombo.keySet()) {
+			double catValueEntropy = 0;
+			double count = 0;
+			List<Integer> list = catValueCombo.get(key);
+			for (Integer integer : list) {
+				count += integer;
+			}
+			for (Integer integer : list) {
+				if (integer  != 0 || integer != -0) {
+					catValueEntropy += -(integer/count) * Math.log(integer/count) / Math.log(2);
+				}
+			}
+			entropy += -(count/divider) * catValueEntropy;
+		}
+		return entropy;
+	}
 
 	public static double calulateEntropy(int divider, Map<String, Integer> categories) {
 		double entropy = 0;
