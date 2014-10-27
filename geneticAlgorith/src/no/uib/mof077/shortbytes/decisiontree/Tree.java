@@ -56,91 +56,6 @@ public class Tree {
 				categories.get(category).put(pCategoryValue, categoryValueCount+1);
 			}
 		}
-		
-		String male, female, zero, one, two, low, med, high, cheap, standard, expensive, bus, car, train;
-		male = Person.Gender.MALE.name();
-		female = Person.Gender.FEMALE.name();
-		zero = "0";
-		one = "1";
-		two = "2";
-		low = Person.IncomeLevel.LOW.name();
-		med = Person.IncomeLevel.MEDIUM.name();
-		high = Person.IncomeLevel.HIGH.name();
-		cheap = Person.TravelCost.CHEAP.name();
-		standard = Person.TravelCost.STANDARD.name();
-		expensive = Person.TravelCost.EXPENSIVE.name();
-		bus = Person.TransportMode.BUS.name();
-		car = Person.TransportMode.CAR.name();
-		train = Person.TransportMode.TRAIN.name();
-
-
-		genderCategories.put(male, 0);
-		genderCategories.put(female, 0);
-
-		carsCategories.put(zero, 0);
-		carsCategories.put(one, 0);
-		carsCategories.put(two, 0);
-
-		incomeCategories.put(low, 0);
-		incomeCategories.put(med, 0);
-		incomeCategories.put(high, 0);
-
-		travelCostCategories.put(cheap, 0);
-		travelCostCategories.put(standard, 0);
-		travelCostCategories.put(expensive, 0);
-
-		transportModeCategories.put(bus, 0);
-		transportModeCategories.put(car, 0);
-		transportModeCategories.put(train, 0);
-
-		for (Person person : people) {
-
-			String gender, cars, income, travelCost, transportMode;
-
-			if (person.getGender() == Person.Gender.MALE) {
-				gender = male;
-			} else {
-				gender = female;
-			}
-
-			if (person.getIncomeLevel() == Person.IncomeLevel.LOW) {
-				income = low;
-			} else if (person.getIncomeLevel() == Person.IncomeLevel.MEDIUM) {
-				income = med;
-			} else {
-				income = high;
-			}
-
-			if (person.getNumCars() == 0) {
-				cars = zero;
-			} else if (person.getNumCars() == 1) {
-				cars = one;
-			} else {
-				cars = two;
-			}
-
-			if (person.getTransportMode() == Person.TransportMode.BUS) {
-				transportMode = bus;
-			} else if (person.getTransportMode() == Person.TransportMode.CAR) {
-				transportMode = car;
-			} else {
-				transportMode = train;
-			}
-
-			if (person.getTravelCost() == Person.TravelCost.CHEAP) {
-				travelCost = cheap;
-			} else if (person.getTravelCost() == Person.TravelCost.STANDARD) {
-				travelCost = standard;
-			} else {
-				travelCost = expensive;
-			}
-
-			genderCategories.put(gender, genderCategories.get(gender) + 1);
-			incomeCategories.put(income, incomeCategories.get(income) + 1);
-			carsCategories.put(cars, carsCategories.get(cars) + 1);
-			transportModeCategories.put(transportMode, transportModeCategories.get(transportMode) + 1);
-			travelCostCategories.put(travelCost, travelCostCategories.get(travelCost) + 1);
-		}
 	}
 
 	public static Node createNode(int divider, String category, Map<String, Integer> categories) {
@@ -249,41 +164,6 @@ public class Tree {
 		
 		Node rootNode = Tree.selectNodeWithHighestEntropy(nodeCandidates);
 		tree.setRootNode(rootNode);
-		
-		/*########## OLD SHIT ##########*/
-//		Node genderEntropy = Tree.createNode(tree.getPeople().size(), "gender", tree.genderCategories);
-//		Node carsEntropy = Tree.createNode(tree.getPeople().size(), "cars", tree.carsCategories);
-//		Node travelCostEntropy = Tree.createNode(tree.getPeople().size(), "travelCost", tree.travelCostCategories);
-//		Node transportEntropy = Tree.createNode(tree.getPeople().size(), "transportMode", tree.transportModeCategories);
-//		Node incomeEntropy = Tree.createNode(tree.getPeople().size(), "income", tree.incomeCategories);
-//
-//		System.out.println("<gender> entropy: " + genderEntropy.getEntropy());
-//		System.out.println("<cars> entropy: " + carsEntropy.getEntropy());
-//		System.out.println("<travel> entropy: " + travelCostEntropy.getEntropy());
-//		System.out.println("<income> entropy: " + incomeEntropy.getEntropy());
-//		System.out.println("<transport> entropy: " + transportEntropy.getEntropy());
-//
-//		Node maxNode = selectNodeWithHighestEntropy(genderEntropy, carsEntropy, travelCostEntropy, transportEntropy, incomeEntropy);
-//		
-//		System.out.println("Max: <" + maxNode.getCategory().toLowerCase() + "> with entropy " + maxNode.getEntropy());
-//
-//		double genderInfoGain = tree.caclulateInformationGainCategoryValue(maxNode.getEntropy(), maxNode.getCategory(), genderEntropy.getCategory());
-//		double carsInfoGain = tree.caclulateInformationGainCategoryValue(maxNode.getEntropy(), maxNode.getCategory(), carsEntropy.getCategory());
-//		double travelCostInfoGain = tree.caclulateInformationGainCategoryValue(maxNode.getEntropy(), maxNode.getCategory(), travelCostEntropy.getCategory());
-//		double incomeInfoGain = tree.caclulateInformationGainCategoryValue(maxNode.getEntropy(), maxNode.getCategory(), incomeEntropy.getCategory());
-//		
-//		System.out.println("<gender> info gain: " + genderInfoGain);
-//		System.out.println("<cars> info gain: " + carsInfoGain);
-//		System.out.println("<travel> info gain: " + travelCostInfoGain);
-//		System.out.println("<income> info gain: " + incomeInfoGain);
-//		
-//		genderEntropy.setEntropy(genderInfoGain);
-//		carsEntropy.setEntropy(carsInfoGain);
-//		travelCostEntropy.setEntropy(travelCostInfoGain);
-//		incomeEntropy.setEntropy(incomeInfoGain);
-//		
-//		Node rootNode = selectNodeWithHighestEntropy(genderEntropy, carsEntropy, travelCostEntropy, incomeEntropy);
-//		tree.setRootNode(rootNode);
 		
 		System.out.println("Root node: <" + tree.getRootNode().getCategory() + ">, info gain: " + tree.getRootNode().getInfoGain());
 	}
