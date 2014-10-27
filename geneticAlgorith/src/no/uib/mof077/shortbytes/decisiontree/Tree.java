@@ -4,19 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class Tree {
 	private List<Person> people;
 	private Node rootNode;
 	
 	public Map<String, Map<String, Integer>> categories = new HashMap<>();
-
-	public Map<String, Integer> genderCategories = new HashMap<>();
-	public Map<String, Integer> carsCategories = new HashMap<>();
-	public Map<String, Integer> incomeCategories = new HashMap<>();
-	public Map<String, Integer> travelCostCategories = new HashMap<>();
-	public Map<String, Integer> transportModeCategories = new HashMap<>();
 
 	public Tree() {
 		people = new ArrayList<>();
@@ -31,7 +24,6 @@ public class Tree {
 				new Person(Person.Gender.FEMALE, 1, Person.TravelCost.CHEAP, Person.IncomeLevel.MEDIUM, Person.TransportMode.TRAIN),
 				new Person(Person.Gender.MALE, 0, Person.TravelCost.STANDARD, Person.IncomeLevel.MEDIUM, Person.TransportMode.TRAIN),
 				new Person(Person.Gender.FEMALE, 1, Person.TravelCost.STANDARD, Person.IncomeLevel.MEDIUM, Person.TransportMode.TRAIN));
-//		this.rootNode = new Node(null, null, null, 0, 0, 0);
 	}
 
 	public void addPeople(Person... persons) {
@@ -64,7 +56,6 @@ public class Tree {
 	}
 
 	public double caclulateInformationGainCategoryValue(double entropy, String keyCat1, String keyCat2) {
-		double infoGain = 0;
 
 		// Get all possible values for the category, e.g. TransportMode => {"Bus", "Car", "Train"}
 		String[] cat1Values = Person.getCategoryValues(keyCat1.toLowerCase());
@@ -97,12 +88,7 @@ public class Tree {
 			}
 		}
 		
-		infoGain = calculateCatValueEntropy(entropy, people.size(), cat2ValueCombo);
-		
-//		for (String categoryValue : catValueCount.keySet()) {
-//			double valueCount = catValueCount.get(categoryValue);
-//			infoGain += -(valueCount/people.size()) * Tree.calulateEntropy(cat1Values.length, catValueCount);
-//		}
+		double infoGain = calculateCatValueEntropy(entropy, people.size(), cat2ValueCombo);
 
 		return infoGain;
 	}
