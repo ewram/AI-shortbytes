@@ -112,31 +112,35 @@ public class Person {
 		}
 	}
 	
+	public static String[] getCategories() {
+		return new String[]{"gender", "cars", "travelcost", "income", "transportmode"};
+	}
+	
 	public static String[] getCategoryValues(String keyCat) {
 		String[] categoryValues;
 		switch (keyCat.toLowerCase()) {
 		case "gender":
 			categoryValues = new String[Gender.values().length];
 			for (int i = 0; i < Gender.values().length; i++) {
-				categoryValues[i] = Gender.values()[i].name();
+				categoryValues[i] = Gender.values()[i].name().toLowerCase();
 			}
 			break;
 		case "travelcost":
 			categoryValues = new String[TravelCost.values().length];
 			for (int i = 0; i < TravelCost.values().length; i++) {
-				categoryValues[i] = TravelCost.values()[i].name();
+				categoryValues[i] = TravelCost.values()[i].name().toLowerCase();
 			}
 			break;
 		case "income":
 			categoryValues = new String[IncomeLevel.values().length];
 			for (int i = 0; i < IncomeLevel.values().length; i++) {
-				categoryValues[i] = IncomeLevel.values()[i].name();
+				categoryValues[i] = IncomeLevel.values()[i].name().toLowerCase();
 			}
 			break;
 		case "transportmode":
 			categoryValues = new String[TransportMode.values().length];
 			for (int i = 0; i < TransportMode.values().length; i++) {
-				categoryValues[i] = TransportMode.values()[i].name();
+				categoryValues[i] = TransportMode.values()[i].name().toLowerCase();
 			}
 			break;
 		case "cars":

@@ -7,13 +7,15 @@ public class Node {
 	private Map<String, Node> children;
 	private String category;
 	private double entropy;
+	private double infoGain;
 	private double total;
 	
-	public Node(Node parent, Map<String, Node> children, String category, double entropy, double total) {
+	public Node(Node parent, Map<String, Node> children, String category, double entropy, double infoGain, double total) {
 		this.parent = parent;
 		this.children = children;
 		this.category = category;
 		this.entropy = entropy;
+		this.infoGain = infoGain;
 		this.total = total;
 	}
 
@@ -47,6 +49,14 @@ public class Node {
 
 	public void setEntropy(double entropy) {
 		this.entropy = entropy;
+	}
+
+	public double getInfoGain() {
+		return infoGain;
+	}
+
+	public void setInfoGain(double infoGain) {
+		this.infoGain = infoGain;
 	}
 
 	public double getTotal() {
