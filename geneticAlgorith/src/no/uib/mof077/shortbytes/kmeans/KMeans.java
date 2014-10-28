@@ -16,18 +16,25 @@ public class KMeans {
 		Random rand = new Random();
 		this.addCategory(new Category(), new Category(), new Category());
 		this.addVector(
-				new Vector3((float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat())),
-				new Vector3((float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat())),
-				new Vector3((float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat())),
-				new Vector3((float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat())),
-				new Vector3((float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat())),
-				new Vector3((float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat())),
-				new Vector3((float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat())),
-				new Vector3((float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat())),
-				new Vector3((float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat())),
-				new Vector3((float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat())),
-				new Vector3((float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat())),
-				new Vector3((float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat()))
+				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
+				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
+				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
+				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
+				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
+				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
+				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
+				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
+				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
+				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
+				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
+				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
+				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
+				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
+				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
+				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
+				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
+				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
+				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()))
 				);
 		for(Category c : this.categories) {
 			int center = rand.nextInt(vectors.size()-1);
@@ -35,6 +42,15 @@ public class KMeans {
 			c.setCenter(new Vector3(vec.getX(),vec.getY(),vec.getZ()));
 			c.getMembers().add(vec);
 		}
+	}
+	
+	public double calculateEucledian(Vector3 value, Vector3 target) {
+		double dX = (target.getX()-value.getX()) * (target.getX()-value.getX());
+		double dY = (target.getY()-value.getY()) * (target.getY()-value.getY());
+		double dZ = (target.getZ()-value.getZ()) * (target.getY()-value.getY());
+		
+		double distance = Math.sqrt(dX+dY+dZ);
+		return distance;
 	}
 	
 	public void addVector(Vector3... vec) {
@@ -99,5 +115,6 @@ public class KMeans {
 			catCount++;
 		}
 		means.evaluateCenter();
+		System.out.println(means.calculateEucledian(new Vector3(0, 0, 0), new Vector3(2,2,2)));
 	}
 }

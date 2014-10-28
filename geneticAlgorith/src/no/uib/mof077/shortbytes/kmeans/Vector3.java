@@ -2,37 +2,37 @@ package no.uib.mof077.shortbytes.kmeans;
 
 public class Vector3 {
 	
-	private float x;
-	private float y;
-	private float z;
+	private double x;
+	private double y;
+	private double z;
 	
-	public Vector3(float x, float y, float z) {
+	public Vector3(double x, double y, double z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 
-	public float getX() {
+	public double getX() {
 		return x;
 	}
 
-	public void setX(float x) {
+	public void setX(double x) {
 		this.x = x;
 	}
 
-	public float getY() {
+	public double getY() {
 		return y;
 	}
 
-	public void setY(float y) {
+	public void setY(double y) {
 		this.y = y;
 	}
 
-	public float getZ() {
+	public double getZ() {
 		return z;
 	}
 
-	public void setZ(float z) {
+	public void setZ(double z) {
 		this.z = z;
 	}
 }
