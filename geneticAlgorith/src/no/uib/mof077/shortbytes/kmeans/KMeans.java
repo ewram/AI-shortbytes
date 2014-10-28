@@ -11,34 +11,14 @@ public class KMeans {
 	
 	
 	public KMeans() {
-		vectors = new ArrayList<>();
-		categories = new ArrayList<>();
+		this.vectors = new ArrayList<>();
+		this.categories = new ArrayList<>();
 		Random rand = new Random();
-		this.addCategory(new Category(), new Category(), new Category());
-		this.addVector(
-				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
-				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
-				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
-				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
-				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
-				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
-				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
-				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
-				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
-				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
-				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
-				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
-				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
-				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
-				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
-				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
-				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
-				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble())),
-				new Vector3((double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()), (double)(rand.nextInt(9) + rand.nextDouble()))
-				);
+		addCategories(2);
+		addVectors(80, 1000);
 		for(Category c : this.categories) {
-			int center = rand.nextInt(vectors.size()-1);
-			Vector3 vec = vectors.get(center);
+			int center = rand.nextInt(this.vectors.size()-1);
+			Vector3 vec = this.vectors.get(center);
 			c.setCenter(new Vector3(vec.getX(),vec.getY(),vec.getZ()));
 			c.getMembers().add(vec);
 		}
@@ -59,9 +39,22 @@ public class KMeans {
 		}
 	}
 	
+	public void addVectors(int maxRand, int amount) {
+		Random rand = new Random();
+		for (int i = 0; i < amount; i++) {
+			vectors.add(new Vector3((double)(rand.nextInt(maxRand) + rand.nextDouble()), (double)(rand.nextInt(maxRand) + rand.nextDouble()), (double)(rand.nextInt(maxRand) + rand.nextDouble())));
+		}
+	}
+	
 	public void addCategory(Category... cat) {
 		for (Category category : cat) {
 			categories.add(category);
+		}
+	}
+	
+	public void addCategories(int amount) {
+		for (int i = 0; i < amount; i++) {
+			categories.add(new Category());
 		}
 	}
 	
@@ -92,29 +85,44 @@ public class KMeans {
 		int count = 1;
 		for(Vector3 vec : means.getVectors()) {
 			System.out.println("Vector: " +count);
-			System.out.println(vec.getX());
-			System.out.println(vec.getY());
-			System.out.println(vec.getZ());
-			System.out.println();
+			System.out.println(vec);
 			count++;
 		}
-		int catCount = 1;
-		for(Category c : means.getCategories()) {
-			System.out.println("Category: " + catCount);
-			System.out.println("Center: " + c.getCenter().getX() +" " +c.getCenter().getY() + " " + c.getCenter().getZ());
-			System.out.println("Members of category: " + catCount);
-			int memberCount = 1;
-			for(Vector3 vector : c.getMembers()) {
-				System.out.println("Member: " + memberCount );
-				System.out.println(vector.getX());
-				System.out.println(vector.getY());
-				System.out.println(vector.getZ());
-				System.out.println();
-				memberCount++;
+		
+		
+		double eucledian = 0;
+		final double acceptance = 0.05d;
+		double difference = acceptance + 1;
+		
+		while (!(difference < acceptance)) {
+			int catCount = 1;
+			for(Category c : means.getCategories()) {
+				System.out.println(""
+						+ "Category: " + catCount + "\n"
+						+ "Center: " + c.getCenter().getX() +" " +c.getCenter().getY() + " " + c.getCenter().getZ() + "\n"
+						+ "Members of category: " + c.getMembers().toString() + "\n"
+						);
+				int memberCount = 1;
+				for(Vector3 vector : c.getMembers()) {
+					System.out.println("Member: " + memberCount );
+					System.out.println(vector.getX());
+					System.out.println(vector.getY());
+					System.out.println(vector.getZ() + "\n");
+					memberCount++;
+				}
+				catCount++;
 			}
-			catCount++;
+			means.evaluateCenter();
+			double newEucledian = means.calculateEucledian(new Vector3(0, 0, 0), new Vector3(2,2,2));
+			difference = Math.abs(newEucledian-eucledian);
+			System.out.println(""
+					+ "Old eucledian distance = " + eucledian + "\n"
+					+ "New eucledian distance = " + newEucledian + "\n"
+					+ "Difference = " + difference + "\n"
+					);
+			
+			eucledian = newEucledian;
 		}
-		means.evaluateCenter();
-		System.out.println(means.calculateEucledian(new Vector3(0, 0, 0), new Vector3(2,2,2)));
+		
 	}
 }

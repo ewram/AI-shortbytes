@@ -11,6 +11,15 @@ public class Vector3 {
 		this.y = y;
 		this.z = z;
 	}
+	
+	@Override
+	public String toString() {
+		String string = "";
+		string += "x=" + this.x + ", ";
+		string += "y=" + this.y + ", ";
+		string += "z=" + this.z;
+		return string;
+	}
 
 	public double getX() {
 		return x;
