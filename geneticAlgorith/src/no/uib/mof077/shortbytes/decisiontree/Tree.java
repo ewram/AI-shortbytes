@@ -31,6 +31,17 @@ public class Tree {
 			people.add(person);
 		}
 	}
+	
+	public List<Person> getPeopleWithCategoryValue(String category, String categoryValue) {
+		List<Person> peopleWithCategoryValue = new ArrayList<>();
+		for (Person person : this.people) {
+			if (person.getProperties().get(category) != null &&
+					person.getProperties().get(category).equals(categoryValue)) {
+				peopleWithCategoryValue.add(person);
+			}
+		}
+		return peopleWithCategoryValue;
+	}
 
 	public void init() {
 		for (String category : Person.getCategories()) {
@@ -58,8 +69,46 @@ public class Tree {
 		}
 		return new Node(null, children, category, entropy, 0, categories.size());
 	}
+	
+	public double caclulateCategoryValueInformationGain(double entropy, String category1, String category1Value, String category2) {
 
-	public double caclulateInformationGainCategoryValue(double entropy, String keyCat1, String keyCat2) {
+		// Get all possible values for the category, e.g. TransportMode => {"Bus", "Car", "Train"}
+		String[] cat1Values = Person.getCategoryValues(category1.toLowerCase());
+		String[] cat2Values = Person.getCategoryValues(category2.toLowerCase());
+		
+		// Initialize map to keep track of how many people have each value, e.g. "Bus" => 4, "Car" => 3, "Train" => 3
+		Map<String, List<Integer>> cat2ValueCombo = new HashMap<>(); // NEW
+		for (int i = 0; i < cat2Values.length; i++) {
+			cat2ValueCombo.put(cat2Values[i].toLowerCase(), new ArrayList<Integer>()); // NEW
+			
+			List<Integer> arrayOfCoocurrances = new ArrayList<>();
+			for (int j = 0; j < cat1Values.length; j++) {
+				arrayOfCoocurrances.add(0);
+			}
+			cat2ValueCombo.put(cat2Values[i].toLowerCase(), arrayOfCoocurrances);
+		}
+
+		// For each person, count +1 for each category value
+		List<Person> relevantPeople = getPeopleWithCategoryValue(category1, category1Value);
+		for (Person person : relevantPeople) {
+			String category2Value = person.getProperties().get(category2.toLowerCase()).toLowerCase();
+			
+			for (int i = 0; i < cat1Values.length; i++) {
+				if (cat1Values[i].toLowerCase().equals(category1Value)) {
+					List<Integer> values = cat2ValueCombo.get(category2Value);
+					int count = values.remove(i);
+					values.add(i, count+1);
+					cat2ValueCombo.put(category2Value, values);
+				}
+			}
+		}
+		
+		double infoGain = calculateCatValueEntropy(entropy, relevantPeople.size(), cat2ValueCombo);
+
+		return infoGain;
+	}
+
+	public double caclulateCategoryInformationGain(double entropy, String keyCat1, String keyCat2) {
 
 		// Get all possible values for the category, e.g. TransportMode => {"Bus", "Car", "Train"}
 		String[] cat1Values = Person.getCategoryValues(keyCat1.toLowerCase());
@@ -163,8 +212,13 @@ public class Tree {
 	
 	// TODO Something recursive to create a friggin' tree, yo
 	public static void createTree(Tree tree, double totalEntropy, Node classCategory, List<Node> nodes) {
+		// IF no rootNode in tree: select one
+		
+		// ELSE for each categoryValue of node, create a new branch by selecting one of the remaining nodes
+		
+		
 		for (Node node : nodes) {
-			double nodeInfoGain = tree.caclulateInformationGainCategoryValue(
+			double nodeInfoGain = tree.caclulateCategoryInformationGain(
 					totalEntropy,
 					classCategory.getCategory(),
 					node.getCategory());
@@ -180,7 +234,7 @@ public class Tree {
 		if (nodes.isEmpty()) {
 			return;
 		} else {
-			createTree(tree, totalEntropy, rootNode, nodes);
+			
 		}
 	}
 
