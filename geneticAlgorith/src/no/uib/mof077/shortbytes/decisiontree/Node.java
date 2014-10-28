@@ -1,10 +1,13 @@
 package no.uib.mof077.shortbytes.decisiontree;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class Node {
 	private Node parent;
 	private Map<String, Node> children;
+	private List<Person> people;
 	private String category;
 	private double entropy;
 	private double infoGain;
@@ -13,6 +16,7 @@ public class Node {
 	public Node(Node parent, Map<String, Node> children, String category, double entropy, double infoGain, double total) {
 		this.parent = parent;
 		this.children = children;
+		this.people = new ArrayList<>();
 		this.category = category;
 		this.entropy = entropy;
 		this.infoGain = infoGain;
@@ -33,6 +37,14 @@ public class Node {
 
 	public void setChildren(Map<String, Node> children) {
 		this.children = children;
+	}
+
+	public List<Person> getPeople() {
+		return people;
+	}
+
+	public void setPeople(List<Person> people) {
+		this.people = people;
 	}
 
 	public String getCategory() {
