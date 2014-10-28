@@ -165,11 +165,11 @@ public class Tree {
 		return entropy;
 	}
 
-	public static double calulateEntropy(int divider, Map<String, Integer> categories) {
+	public static double calulateEntropy(int divider, Map<String, Integer> categoryValues) {
 		double entropy = 0;
-		for (String catValue : categories.keySet()) {
-			double categoryValues = categories.get(catValue);
-			entropy += -(categoryValues / divider) * (Math.log(categoryValues/divider) / Math.log(2));
+		for (String categorValue : categoryValues.keySet()) {
+			double categoryValueCount = categoryValues.get(categorValue);
+			entropy += -(categoryValueCount / divider) * (Math.log(categoryValueCount/divider) / Math.log(2));
 		}
 		return entropy;
 	}
@@ -207,35 +207,59 @@ public class Tree {
 		Tree.createTree(tree, totalEntropy.getEntropy(), totalEntropy, nodeCandidates);
 		// This is where the magic ends
 		
-		System.out.println("Root node: <" + tree.getRootNode().getCategory() + ">, info gain: " + tree.getRootNode().getInfoGain());
+		
 	}
 	
 	// TODO Something recursive to create a friggin' tree, yo
-	public static void createTree(Tree tree, double totalEntropy, Node classCategory, List<Node> nodes) {
-		// IF no rootNode in tree: select one
+	public static void createTree(Tree tree, double totalEntropy, Node parentNode, List<Node> nodes) {
 		
-		// ELSE for each categoryValue of node, create a new branch by selecting one of the remaining nodes
-		
-		
-		for (Node node : nodes) {
-			double nodeInfoGain = tree.caclulateCategoryInformationGain(
-					totalEntropy,
-					classCategory.getCategory(),
-					node.getCategory());
-			node.setInfoGain(nodeInfoGain);
-			System.out.println("<" + node.getCategory() + "> information gain: " + node.getInfoGain());
-		}
-		
-		Node rootNode = Tree.selectNodeWithHighestInfoGain(nodes);
-		nodes.remove(rootNode);
-		if (tree.getRootNode() == null) {
-			tree.setRootNode(rootNode);
-		}
-		if (nodes.isEmpty()) {
-			return;
-		} else {
+		if (tree.getRootNode() == null) {// IF no rootNode in tree: select one
+			for (Node node : nodes) {
+				double nodeInfoGain = tree.caclulateCategoryInformationGain(
+						totalEntropy,
+						parentNode.getCategory(),
+						node.getCategory());
+				node.setInfoGain(nodeInfoGain);
+				System.out.println("<" + node.getCategory() + "> information gain: " + node.getInfoGain());
+			}
 			
+			Node rootNode = Tree.selectNodeWithHighestInfoGain(nodes);
+			nodes.remove(rootNode);
+			tree.setRootNode(rootNode);
+			System.out.println("Root node: <" + tree.getRootNode().getCategory() + ">, info gain: " + tree.getRootNode().getInfoGain());
+			Tree.createTree(tree, totalEntropy, rootNode, nodes);
+		} else { // ELSE for each categoryValue of node, create a new branch by selecting one of the remaining nodes
+			if (nodes.isEmpty()) {
+				return;
+			} else {
+				for (String categoryValue : parentNode.getChildren().keySet()) {
+					List<Node> nodeBranchNodes = Tree.duplicateListOfNodes(nodes);
+					for (Node node : nodeBranchNodes) {
+						
+						double nodeInfoGain = tree.caclulateCategoryValueInformationGain(
+								parentNode.getEntropy(),
+								parentNode.getCategory(),
+								categoryValue,
+								node.getCategory());
+						node.setInfoGain(nodeInfoGain);
+						System.out.println("<" + node.getCategory() + "> information gain on " + parentNode.getCategory() + "=" + categoryValue + ": "+ node.getInfoGain());
+					}
+					
+					Node nodeBranch = Tree.selectNodeWithHighestInfoGain(nodes);
+					nodeBranchNodes.remove(nodeBranch);
+					System.out.println("Branch node: <" + nodeBranch.getCategory() + ">, on " + parentNode.getCategory() + "=" + categoryValue + ". Info gain: " + nodeBranch.getInfoGain());
+					Tree.createTree(tree, nodeBranch.getEntropy(), nodeBranch, nodeBranchNodes);
+				}
+			}
 		}
+	}
+	
+	public static List<Node> duplicateListOfNodes(List<Node> nodes) {
+		List<Node> newList = new ArrayList<>();
+		for (Node node : nodes) {
+			newList.add(node);
+		}
+		return newList;
 	}
 
 	public static Node selectNodeWithHighestEntropy(Node... nodesArgs) {
