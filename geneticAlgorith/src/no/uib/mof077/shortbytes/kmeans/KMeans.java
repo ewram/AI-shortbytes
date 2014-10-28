@@ -7,13 +7,14 @@ import java.util.Random;
 public class KMeans {
 	
 	private List<Vector3> vectors;
-	private Vector3 center1;
-	private Vector3 center2;
+	private List<Category> categories;
 	
 	
 	public KMeans() {
 		vectors = new ArrayList<>();
+		categories = new ArrayList<>();
 		Random rand = new Random();
+		this.addCategory(new Category(), new Category(), new Category());
 		this.addVector(
 				new Vector3((float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat())),
 				new Vector3((float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat())),
@@ -28,10 +29,12 @@ public class KMeans {
 				new Vector3((float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat())),
 				new Vector3((float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat()), (float)(rand.nextInt(9) + rand.nextFloat()))
 				);
-		int center1 = rand.nextInt(vectors.size()-1);
-		int center2 = rand.nextInt(vectors.size()-1);
-		this.center1 = vectors.get(center1);
-		this.center2 = vectors.get(center2);
+		for(Category c : this.categories) {
+			int center = rand.nextInt(vectors.size()-1);
+			Vector3 vec = vectors.get(center);
+			c.setCenter(new Vector3(vec.getX(),vec.getY(),vec.getZ()));
+			c.getMembers().add(vec);
+		}
 	}
 	
 	public void addVector(Vector3... vec) {
@@ -40,28 +43,16 @@ public class KMeans {
 		}
 	}
 	
-	public static void main(String[] args) {
-		KMeans means = new KMeans();
-		List <Vector3>list = means.getVectors();
-		int count = 1;
-		for(Vector3 vec : list) {
-			System.out.println("Vector: " +count);
-			System.out.println(vec.getX());
-			System.out.println(vec.getY());
-			System.out.println(vec.getZ());
-			System.out.println();
-			count++;
+	public void addCategory(Category... cat) {
+		for (Category category : cat) {
+			categories.add(category);
 		}
-
-		System.out.println("Center1");
-		System.out.println(means.getCenter1().getX());
-		System.out.println(means.getCenter1().getY());
-		System.out.println(means.getCenter1().getZ());
-		System.out.println();
-		System.out.println("Center2");
-		System.out.println(means.getCenter2().getX());
-		System.out.println(means.getCenter2().getY());
-		System.out.println(means.getCenter2().getZ());
+	}
+	
+	public void evaluateCenter() {
+		for(Category c : this.categories) {
+			c.evaluateCenter();
+		}
 	}
 
 	public List<Vector3> getVectors() {
@@ -72,19 +63,41 @@ public class KMeans {
 		this.vectors = vectors;
 	}
 
-	public Vector3 getCenter1() {
-		return center1;
+	public List<Category> getCategories() {
+		return categories;
 	}
 
-	public void setCenter1(Vector3 center1) {
-		this.center1 = center1;
+	public void setCategories(List<Category> categories) {
+		this.categories = categories;
 	}
-
-	public Vector3 getCenter2() {
-		return center2;
-	}
-
-	public void setCenter2(Vector3 center2) {
-		this.center2 = center2;
+	
+	public static void main(String[] args) {
+		KMeans means = new KMeans();
+		int count = 1;
+		for(Vector3 vec : means.getVectors()) {
+			System.out.println("Vector: " +count);
+			System.out.println(vec.getX());
+			System.out.println(vec.getY());
+			System.out.println(vec.getZ());
+			System.out.println();
+			count++;
+		}
+		int catCount = 1;
+		for(Category c : means.getCategories()) {
+			System.out.println("Category: " + catCount);
+			System.out.println("Center: " + c.getCenter().getX() +" " +c.getCenter().getY() + " " + c.getCenter().getZ());
+			System.out.println("Members of category: " + catCount);
+			int memberCount = 1;
+			for(Vector3 vector : c.getMembers()) {
+				System.out.println("Member: " + memberCount );
+				System.out.println(vector.getX());
+				System.out.println(vector.getY());
+				System.out.println(vector.getZ());
+				System.out.println();
+				memberCount++;
+			}
+			catCount++;
+		}
+		means.evaluateCenter();
 	}
 }
