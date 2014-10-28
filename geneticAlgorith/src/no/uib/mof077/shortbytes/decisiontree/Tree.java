@@ -42,6 +42,17 @@ public class Tree {
 		}
 		return peopleWithCategoryValue;
 	}
+	
+	public static List<Person> getPeopleWithCategoryValue(List<Person> people, String category, String categoryValue) {
+		List<Person> peopleWithCategoryValue = new ArrayList<>();
+		for (Person person : people) {
+			if (person.getProperties().get(category) != null &&
+					person.getProperties().get(category).equals(categoryValue)) {
+				peopleWithCategoryValue.add(person);
+			}
+		}
+		return peopleWithCategoryValue;
+	}
 
 	public void init() {
 		for (String category : Person.getCategories()) {
@@ -62,7 +73,7 @@ public class Tree {
 	}
 
 	public static Node createNode(int divider, String category, Map<String, Integer> categories) {
-		double entropy = Tree.calulateEntropy(divider, categories);
+		double entropy = Tree.calculateEntropy(divider, categories);
 		Map<String, Node> children = new HashMap<>();
 		for (String categoryValue : Person.getCategoryValues(category)) {
 			children.put(categoryValue, null);
@@ -70,7 +81,23 @@ public class Tree {
 		return new Node(null, children, category, entropy, 0, categories.size());
 	}
 	
-	public double caclulateCategoryValueInformationGain(double entropy, String category1, String category1Value, String category2) {
+	public static Map<String, Integer> getCategoryMap(Node node) {
+		Map<String, Integer> categoryMap = new HashMap<>();
+		for (String categoryValue : node.getChildren().keySet()) {
+			categoryMap.put(categoryValue, 0);
+		}
+		for (Person person : node.getPeople()) {
+			for (String categoryValue : node.getChildren().keySet()) {
+				if (person.getProperties().get(node.getCategory()).equals(categoryValue)) {
+					categoryMap.put(categoryValue, categoryMap.get(categoryValue)+1);
+				}
+			}
+			
+		}
+		return categoryMap;
+	}
+	
+	public double calculateCategoryValueInformationGain(double entropy, String category1, String category1Value, String category2) {
 
 		// Get all possible values for the category, e.g. TransportMode => {"Bus", "Car", "Train"}
 		String[] cat1Values = Person.getCategoryValues(category1.toLowerCase());
@@ -108,7 +135,7 @@ public class Tree {
 		return infoGain;
 	}
 
-	public double caclulateCategoryInformationGain(double entropy, String keyCat1, String keyCat2) {
+	public double calculateCategoryInformationGain(double entropy, String keyCat1, String keyCat2) {
 
 		// Get all possible values for the category, e.g. TransportMode => {"Bus", "Car", "Train"}
 		String[] cat1Values = Person.getCategoryValues(keyCat1.toLowerCase());
@@ -165,7 +192,7 @@ public class Tree {
 		return entropy;
 	}
 
-	public static double calulateEntropy(int divider, Map<String, Integer> categoryValues) {
+	public static double calculateEntropy(int divider, Map<String, Integer> categoryValues) {
 		double entropy = 0;
 		for (String categorValue : categoryValues.keySet()) {
 			double categoryValueCount = categoryValues.get(categorValue);
@@ -192,22 +219,18 @@ public class Tree {
 		nodeCandidates.remove(totalEntropy);
 		
 		// This is where the magic starts
-//		for (Node node : nodeCandidates) {
-//			double nodeInfoGain = tree.caclulateInformationGainCategoryValue(
-//					totalEntropy.getEntropy(),
-//					totalEntropy.getCategory(),
-//					node.getCategory());
-//			node.setInfoGain(nodeInfoGain);
-//			System.out.println("<" + node.getCategory() + "> information gain: " + node.getInfoGain());
-//		}
-//		
-//		Node rootNode = Tree.selectNodeWithHighestInfoGain(nodeCandidates);
-//		nodeCandidates.remove(rootNode);
-//		tree.setRootNode(rootNode);
 		Tree.createTree(tree, totalEntropy.getEntropy(), totalEntropy, nodeCandidates);
 		// This is where the magic ends
 		
 		
+	}
+	
+	public static double calculateEntropy(double divider, double[] values) {
+		double entropy = 0;
+		for (double d : values) {
+			entropy += -(d / divider) * (Math.log(d/divider) / Math.log(2));
+		}
+		return entropy;
 	}
 	
 	// TODO Something recursive to create a friggin' tree, yo
@@ -215,7 +238,7 @@ public class Tree {
 		
 		if (tree.getRootNode() == null) {// IF no rootNode in tree: select one
 			for (Node node : nodes) {
-				double nodeInfoGain = tree.caclulateCategoryInformationGain(
+				double nodeInfoGain = tree.calculateCategoryInformationGain(
 						totalEntropy,
 						parentNode.getCategory(),
 						node.getCategory());
@@ -235,9 +258,12 @@ public class Tree {
 				for (String categoryValue : parentNode.getChildren().keySet()) {
 					List<Node> nodeBranchNodes = Tree.duplicateListOfNodes(nodes);
 					for (Node node : nodeBranchNodes) {
-						
-						double nodeInfoGain = tree.caclulateCategoryValueInformationGain(
-								parentNode.getEntropy(),
+						List<Person> people = Tree.getPeopleWithCategoryValue(parentNode.getPeople(), parentNode.getCategory(), categoryValue);
+						node.setPeople(people);
+						double entropy = calculateEntropy(people.size(), getCategoryMap(node));
+						node.setEntropy(entropy);
+						double nodeInfoGain = tree.calculateCategoryValueInformationGain(
+								node.getEntropy(),
 								parentNode.getCategory(),
 								categoryValue,
 								node.getCategory());
@@ -247,6 +273,7 @@ public class Tree {
 					
 					Node nodeBranch = Tree.selectNodeWithHighestInfoGain(nodes);
 					nodeBranchNodes.remove(nodeBranch);
+					parentNode.getChildren().put(categoryValue, nodeBranch);
 					System.out.println("Branch node: <" + nodeBranch.getCategory() + ">, on " + parentNode.getCategory() + "=" + categoryValue + ". Info gain: " + nodeBranch.getInfoGain());
 					Tree.createTree(tree, nodeBranch.getEntropy(), nodeBranch, nodeBranchNodes);
 				}
@@ -257,17 +284,9 @@ public class Tree {
 	public static List<Node> duplicateListOfNodes(List<Node> nodes) {
 		List<Node> newList = new ArrayList<>();
 		for (Node node : nodes) {
-			newList.add(node);
+			newList.add(new Node(node.getParent(), node.getChildren(), node.getCategory(), node.getEntropy(), node.getInfoGain(), node.getTotal()));
 		}
 		return newList;
-	}
-
-	public static Node selectNodeWithHighestEntropy(Node... nodesArgs) {
-		List<Node> nodes = new ArrayList<>();
-		for (Node node : nodesArgs) {
-			nodes.add(node);
-		}
-		return selectNodeWithHighestEntropy(nodes);
 	}
 	
 	public static Node selectNodeWithHighestEntropy(List<Node> nodes) {
@@ -293,6 +312,26 @@ public class Tree {
 		}
 		return max;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	public List<Person> getPeople() {
 		return people;
