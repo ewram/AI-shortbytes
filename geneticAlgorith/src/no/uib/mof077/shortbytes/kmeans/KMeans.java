@@ -9,7 +9,7 @@ public class KMeans {
 	private List<Vector3> vectors;
 	private List<Cluster> clusters;
 	private final static double DISTANCE = 100000000;
-	private final static double ACCEPTABLE_ERROR = 0.00001;
+	private final static double ACCEPTABLE_ERROR = 0.0;
 
 
 	public KMeans(int clusters, int vectors, int maxVectorDimensionValue) {
