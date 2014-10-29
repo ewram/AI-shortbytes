@@ -3,21 +3,23 @@ package no.uib.mof077.shortbytes.kmeans;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Category {
-	private Vector3 center;
+public class Cluster {
+	private Vector3 mean;
 	private List<Vector3> members;
+	private Vector3 oldMean;
 	
-	public Category() {
-		this.center = new Vector3(0, 0, 0);
+	public Cluster() {
+		this.oldMean = null;
+		this.mean = null;
 		this.members = new ArrayList<>();
 	}
 
-	public Vector3 getCenter() {
-		return center;
+	public Vector3 getMean() {
+		return mean;
 	}
 
-	public void setCenter(Vector3 center) {
-		this.center = center;
+	public void setMean(Vector3 center) {
+		this.mean = center;
 	}
 
 	public List<Vector3> getMembers() {
@@ -28,7 +30,7 @@ public class Category {
 		this.members = members;
 	}
 
-	public void evaluateCenter() {
+	public void evaluateMean() {
 		float totalX = 0;
 		float totalY = 0;
 		float totalZ = 0;
@@ -41,6 +43,20 @@ public class Category {
 		float avgY = totalY / members.size();
 		float avgZ = totalZ / members.size();
 		
-		this.setCenter(new Vector3(avgX, avgY, avgZ));
+		this.setOldMean(this.getMean());
+		
+		this.setMean(new Vector3(avgX, avgY, avgZ));
+	}
+
+	public Vector3 getOldMean() {
+		return oldMean;
+	}
+
+	public void setOldMean(Vector3 oldMean) {
+		this.oldMean = oldMean;
+	}
+	
+	public boolean checkMeanDiffrence() {
+		return mean.equals(oldMean);
 	}
 }

@@ -5,62 +5,84 @@ import java.util.List;
 import java.util.Random;
 
 public class KMeans {
-	
+
 	private List<Vector3> vectors;
-	private List<Category> categories;
-	
-	
-	public KMeans() {
+	private List<Cluster> clusters;
+	private final static double DISTANCE = 100000000;
+	private final static double ACCEPTABLE_ERROR = 0.00001;
+
+
+	public KMeans(int clusters, int vectors, int maxVectorDimensionValue) {
 		this.vectors = new ArrayList<>();
-		this.categories = new ArrayList<>();
+		this.clusters = new ArrayList<>();
 		Random rand = new Random();
-		addCategories(2);
-		addVectors(80, 1000);
-		for(Category c : this.categories) {
+		addClusters(clusters);
+		addVectors(maxVectorDimensionValue, vectors);
+		for(Cluster c : this.clusters) {
 			int center = rand.nextInt(this.vectors.size()-1);
 			Vector3 vec = this.vectors.get(center);
-			c.setCenter(new Vector3(vec.getX(),vec.getY(),vec.getZ()));
-			c.getMembers().add(vec);
+			c.setMean(new Vector3(vec.getX(),vec.getY(),vec.getZ()));
 		}
 	}
-	
+
+	public void placeVectors() {
+		Cluster nearestCluster = null;
+		for(Vector3 v : this.vectors) {
+			double distance = DISTANCE;
+			for(Cluster c : this.clusters) {
+				double clusterDistance = calculateEucledian(v, c.getMean());
+				if(clusterDistance < distance) {
+					distance = clusterDistance;
+					nearestCluster = c;
+				}
+			}
+			nearestCluster.getMembers().add(v);
+		}
+	}
+
 	public double calculateEucledian(Vector3 value, Vector3 target) {
-		double dX = (target.getX()-value.getX()) * (target.getX()-value.getX());
-		double dY = (target.getY()-value.getY()) * (target.getY()-value.getY());
-		double dZ = (target.getZ()-value.getZ()) * (target.getY()-value.getY());
-		
+		double dX = Math.pow((target.getX()-value.getX()),2);
+		double dY = Math.pow((target.getY()-value.getY()),2);
+		double dZ = Math.pow((target.getZ()-value.getZ()),2);
+
 		double distance = Math.sqrt(dX+dY+dZ);
 		return distance;
 	}
-	
+
 	public void addVector(Vector3... vec) {
 		for (Vector3 vector : vec) {
 			vectors.add(vector);
 		}
 	}
-	
+
 	public void addVectors(int maxRand, int amount) {
 		Random rand = new Random();
 		for (int i = 0; i < amount; i++) {
 			vectors.add(new Vector3((double)(rand.nextInt(maxRand) + rand.nextDouble()), (double)(rand.nextInt(maxRand) + rand.nextDouble()), (double)(rand.nextInt(maxRand) + rand.nextDouble())));
 		}
 	}
-	
-	public void addCategory(Category... cat) {
-		for (Category category : cat) {
-			categories.add(category);
+
+	public void addCluster(Cluster... clu) {
+		for (Cluster cluster : clu) {
+			clusters.add(cluster);
 		}
 	}
-	
-	public void addCategories(int amount) {
+
+	public void addClusters(int amount) {
 		for (int i = 0; i < amount; i++) {
-			categories.add(new Category());
+			clusters.add(new Cluster());
 		}
 	}
-	
-	public void evaluateCenter() {
-		for(Category c : this.categories) {
-			c.evaluateCenter();
+
+	public void evaluateMean() {
+		for(Cluster c : this.clusters) {
+			c.evaluateMean();
+		}
+	}
+
+	public void clearClusters() {
+		for(Cluster c : this.clusters) {
+			c.getMembers().clear();
 		}
 	}
 
@@ -72,57 +94,50 @@ public class KMeans {
 		this.vectors = vectors;
 	}
 
-	public List<Category> getCategories() {
-		return categories;
+	public List<Cluster> getClusters() {
+		return clusters;
 	}
 
-	public void setCategories(List<Category> categories) {
-		this.categories = categories;
+	public void setClusters(List<Cluster> clusters) {
+		this.clusters = clusters;
 	}
-	
+
 	public static void main(String[] args) {
-		KMeans means = new KMeans();
-		int count = 1;
-		for(Vector3 vec : means.getVectors()) {
-			System.out.println("Vector: " +count);
-			System.out.println(vec);
+		KMeans means = new KMeans(10, 100000, 10000);
+
+
+
+		String info = "";
+		for (int i = 0; i < means.getClusters().size(); i++) {
+			Cluster c = means.getClusters().get(i);
+			info += "Cluster " + (i+1) + " mean = " + c.getMean() + "\n";
+		}
+
+		// Print out info
+		System.out.println(""
+				+ "Clusters: " + means.getClusters().size() + "\n"
+				+ "Vectors: " + means.getVectors().size() + "\n"
+				+ info);
+
+		double difference = ACCEPTABLE_ERROR + 1;
+		int count = 0;
+		while (difference > ACCEPTABLE_ERROR) {
+			means.clearClusters();
+			means.placeVectors();
+			means.evaluateMean();
+
+			for (Cluster c : means.getClusters()) {
+				difference += means.calculateEucledian(c.getOldMean(), c.getMean());
+			}
+			difference /= means.getClusters().size();
+			System.out.println(difference);
 			count++;
 		}
-		
-		
-		double eucledian = 0;
-		final double acceptance = 0.05d;
-		double difference = acceptance + 1;
-		
-		while (!(difference < acceptance)) {
-			int catCount = 1;
-			for(Category c : means.getCategories()) {
-				System.out.println(""
-						+ "Category: " + catCount + "\n"
-						+ "Center: " + c.getCenter().getX() +" " +c.getCenter().getY() + " " + c.getCenter().getZ() + "\n"
-						+ "Members of category: " + c.getMembers().toString() + "\n"
-						);
-				int memberCount = 1;
-				for(Vector3 vector : c.getMembers()) {
-					System.out.println("Member: " + memberCount );
-					System.out.println(vector.getX());
-					System.out.println(vector.getY());
-					System.out.println(vector.getZ() + "\n");
-					memberCount++;
-				}
-				catCount++;
-			}
-			means.evaluateCenter();
-			double newEucledian = means.calculateEucledian(new Vector3(0, 0, 0), new Vector3(2,2,2));
-			difference = Math.abs(newEucledian-eucledian);
-			System.out.println(""
-					+ "Old eucledian distance = " + eucledian + "\n"
-					+ "New eucledian distance = " + newEucledian + "\n"
-					+ "Difference = " + difference + "\n"
-					);
-			
-			eucledian = newEucledian;
+		System.out.println();
+		System.out.println("Number of Iterations: " + count);
+		System.out.println();
+		for (int i = 0; i < means.getClusters().size(); i++) {
+			System.out.println("Cluster " + (i+1) + " member count= " + means.getClusters().get(i).getMembers().size() + ". Mean = " + means.getClusters().get(i).getMean());
 		}
-		
 	}
 }
