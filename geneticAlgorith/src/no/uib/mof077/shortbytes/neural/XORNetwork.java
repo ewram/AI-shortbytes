@@ -41,40 +41,46 @@ public class XORNetwork {
 		this.hiddenLayer = new NodeLayer(hiddenList, 0.5f);
 		this.outputLayer = new NodeLayer(outputList, 0.2f);
 
-		Random rand = new Random();
-
 		// Create Connections between nodes
-		addConnections(
-				new Connection(input1, hidden1, (float)(rand.nextInt(20)-10)/10),
-				new Connection(input1, hidden2, (float)(rand.nextInt(20)-10)/10),
-				new Connection(input2, hidden1, (float)(rand.nextInt(20)-10)/10),
-				new Connection(input2, hidden2, (float)(rand.nextInt(20)-10)/10),
-				new Connection(hidden1, output1, (float)(rand.nextInt(20)-10)/10),
-				new Connection(hidden2, output1, (float)(rand.nextInt(20)-10)/10)
-				);
+		addConnections(new Connection(input1, hidden1, rand()), new Connection(
+				input1, hidden2, rand()), new Connection(input2, hidden1,
+				rand()), new Connection(input2, hidden2, rand()),
+						new Connection(hidden1, output1, rand()), new Connection(
+								hidden2, output1, rand()));
+	}
+
+	public static float rand() {
+		Random rand = new Random();
+		return rand.nextInt(20) - 10 + rand.nextFloat();
 	}
 
 	/**
 	 * Helper method to add connections to the connection list
+	 *
 	 * @param link1
 	 */
 	private void addConnections(Connection... link1) {
-		for(Connection c : link1) {
+		for (Connection c : link1) {
 			this.connections.add(c);
 		}
 	}
 
 	/**
-	 * Sends signals through all connections based on if the from Node sends above its threshold
-	 * the value is multiplied with the weight, and added to the to Node
+	 * Sends signals through all connections based on if the from Node sends
+	 * above its threshold the value is multiplied with the weight, and added to
+	 * the to Node
 	 */
 	public void sendSignals() {
-		double count = 1;
+		int count = 1;
 
-		for(Connection connection : this.connections) {
-			System.out.println("sending through link " + count +":" + connection.getFrom().getValue()*connection.getWeight());
-			connection.getTo().setValue(connection.getTo().getValue() + (connection.getFrom().getValue() * connection.getWeight()));
-			count++;	
+		for (Connection connection : this.connections) {
+			System.out.println("sending through link " + count + ":"
+					+ connection.getFrom().getValue() * connection.getWeight());
+			connection.getTo().setValue(
+					connection.getTo().getValue()
+							+ (connection.getFrom().getValue() * connection
+									.getWeight()));
+			count++;
 		}
 	}
 
@@ -82,25 +88,25 @@ public class XORNetwork {
 	 * prints the result of the XOR output
 	 */
 	public double[] printResult() {
-		double[] results = new double[outputLayer.getNodeList().size()];
+		double[] results = new double[this.outputLayer.getNodeList().size()];
 		int index = 0;
-		for(Node n : outputLayer.getNodeList()) {
+		for (Node n : this.outputLayer.getNodeList()) {
 			results[index] = n.getValue();
-			if(n.getValue() >= n.getThreshold()) {
+			if (n.getValue() >= n.getThreshold()) {
 				System.out.println("XOR: true");
 			} else {
 				System.out.println("XOR: false");
 			}
-			index ++;
+			index++;
 		}
 		return results;
 	}
 
 	public void runBackPropagation(Node output, double error) {
-		if(output.getFromConnections().size() < 1) {
+		if (output.getFromConnections().size() < 1) {
 			return;
 		} else {
-			for(Connection c : output.getFromConnections()) {
+			for (Connection c : output.getFromConnections()) {
 				// l * e * xi
 				double l = c.getFrom().getLearningRate();
 				double e = error;
@@ -125,36 +131,34 @@ public class XORNetwork {
 
 		for (int i = 0; i < 100; i++) {
 			double totalError = network.calculateTotalError();
-			System.out.println(totalError);
-			network.runBackPropagation(network.outputLayer.getNodeList().get(0), totalError);
+			System.out.println("Total error = " + totalError);
+			network.runBackPropagation(
+					network.outputLayer.getNodeList().get(0), totalError);
 		}
-		
 
-		
 	}
 
 	private double calculateTotalError() {
-		//TEST DATA
-		//true
+		// TEST DATA
+		// true
 		double expected1 = 1.0d;
 		double inputex11 = 1.0d;
 		double inputex12 = 0;
 
-		//true
+		// true
 		double expected2 = 1.0d;
 		double inputex21 = 0.0d;
 		double inputex22 = 1.0d;
 
-		//false
+		// false
 		double expected3 = 0.0d;
 		double inputex31 = 0.0d;
 		double inputex32 = 0.0d;
 
-		//false
+		// false
 		double expected4 = 0.0d;
 		double inputex41 = 1.0d;
 		double inputex42 = 1.0d;
-
 
 		double totalError = 0;
 
